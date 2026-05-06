@@ -3,495 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Semana de Pruebas – Ayudantes 202610</title>
+<title>Semana de Pruebas 202610</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-  :root {
-    --bg: #f5f2ee;
-    --surface: #ffffff;
-    --primary: #1a3a2a;
-    --accent: #c8a96e;
-    --accent2: #e8dcc8;
-    --text: #1a1a1a;
-    --muted: #6b6b6b;
-    --border: #ddd8d0;
-    --yes: #2d6a4f;
-    --no: #9b2226;
-    --yes-bg: #d8f3dc;
-    --no-bg: #ffd6d6;
-    --shadow: 0 4px 24px rgba(0,0,0,0.08);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 0;
-  }
-
-  /* Header */
-  header {
-    background: var(--primary);
-    color: #fff;
-    padding: 2.5rem 2rem 2rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  header::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      -45deg,
-      transparent,
-      transparent 20px,
-      rgba(200,169,110,0.07) 20px,
-      rgba(200,169,110,0.07) 40px
-    );
-  }
-  header .badge {
-    display: inline-block;
-    background: var(--accent);
-    color: var(--primary);
-    font-weight: 600;
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 0.3rem 0.9rem;
-    border-radius: 20px;
-    margin-bottom: 0.9rem;
-  }
-  header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(1.6rem, 5vw, 2.4rem);
-    line-height: 1.2;
-    margin-bottom: 0.4rem;
-  }
-  header p {
-    color: rgba(255,255,255,0.65);
-    font-size: 0.9rem;
-    font-weight: 300;
-  }
-
-  /* Steps */
-  .steps-bar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    padding: 1.4rem 1rem;
-    background: var(--accent2);
-    border-bottom: 1px solid var(--border);
-  }
-  .step {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--muted);
-    transition: color 0.3s;
-  }
-  .step.active { color: var(--primary); }
-  .step.done { color: var(--yes); }
-  .step-num {
-    width: 24px; height: 24px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.72rem; font-weight: 600;
-    background: var(--border);
-    color: var(--muted);
-    transition: all 0.3s;
-    flex-shrink: 0;
-  }
-  .step.active .step-num { background: var(--primary); color: #fff; }
-  .step.done .step-num { background: var(--yes); color: #fff; }
-  .step-sep { color: var(--border); padding: 0 0.6rem; font-size: 1rem; }
-
-  /* Main */
-  main { max-width: 680px; margin: 0 auto; padding: 2rem 1rem 4rem; }
-
-  /* Cards */
-  .card {
-    background: var(--surface);
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: var(--shadow);
-    margin-bottom: 1.2rem;
-    border: 1px solid var(--border);
-    animation: slideIn 0.35s ease;
-  }
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .card-label {
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--accent);
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-  }
-  .card h2 { font-size: 1.15rem; font-weight: 600; margin-bottom: 1.2rem; }
-
-  /* Select */
-  .select-wrap { position: relative; }
-  select {
-    width: 100%;
-    padding: 0.85rem 2.5rem 0.85rem 1rem;
-    font-family: inherit;
-    font-size: 0.95rem;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    background: var(--bg);
-    color: var(--text);
-    appearance: none;
-    cursor: pointer;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,58,42,0.1); }
-  .select-wrap::after {
-    content: '▾';
-    position: absolute;
-    right: 1rem; top: 50%;
-    transform: translateY(-50%);
-    color: var(--muted);
-    pointer-events: none;
-    font-size: 0.9rem;
-  }
-  select:disabled { opacity: 0.45; cursor: not-allowed; }
-
-  /* Ayudantes list */
-  .ayudantes-title {
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    font-weight: 600;
-    margin-bottom: 0.9rem;
-  }
-  .ayudante-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.9rem 1rem;
-    border-radius: 10px;
-    border: 1.5px solid var(--border);
-    background: var(--bg);
-    margin-bottom: 0.7rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  .ayudante-row:last-child { margin-bottom: 0; }
-  .ayudante-row.answered-si {
-    border-color: var(--yes);
-    background: #f0fbf4;
-    box-shadow: 0 0 0 1px var(--yes);
-  }
-  .ayudante-row.answered-no {
-    border-color: var(--no);
-    background: #fff5f5;
-    box-shadow: 0 0 0 1px var(--no);
-  }
-  .ayudante-info { flex: 1; min-width: 0; }
-  .ayudante-nombre {
-    font-weight: 500;
-    font-size: 0.92rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .ayudante-email { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
-  .coord-badge {
-    font-size: 0.65rem;
-    background: var(--accent);
-    color: var(--primary);
-    font-weight: 600;
-    padding: 0.15rem 0.5rem;
-    border-radius: 20px;
-    margin-left: 0.5rem;
-    vertical-align: middle;
-  }
-  .toggle-group {
-    display: flex;
-    gap: 0.4rem;
-    flex-shrink: 0;
-  }
-  .toggle-btn {
-    padding: 0.38rem 0.85rem;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 0.8rem;
-    font-weight: 600;
-    border: 1.5px solid;
-    cursor: pointer;
-    transition: all 0.18s;
-    line-height: 1;
-  }
-  .toggle-btn.si {
-    border-color: var(--yes);
-    color: var(--yes);
-    background: transparent;
-  }
-  .toggle-btn.si:hover, .toggle-btn.si.active {
-    background: var(--yes);
-    color: #fff;
-  }
-  .toggle-btn.no {
-    border-color: var(--no);
-    color: var(--no);
-    background: transparent;
-  }
-  .toggle-btn.no:hover, .toggle-btn.no.active {
-    background: var(--no);
-    color: #fff;
-  }
-
-  /* Summary */
-  #summary { display: none; }
-  #summary.visible { display: block; }
-  .summary-header {
-    text-align: center;
-    padding: 1.5rem;
-    background: linear-gradient(135deg, var(--primary), #2d5a40);
-    border-radius: 14px;
-    color: #fff;
-    margin-bottom: 1.2rem;
-  }
-  .summary-header .check { font-size: 2.5rem; margin-bottom: 0.4rem; }
-  .summary-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; }
-  .summary-header p { font-size: 0.85rem; opacity: 0.75; margin-top: 0.3rem; }
-  .summary-meta {
-    font-size: 0.82rem;
-    color: var(--muted);
-    background: var(--accent2);
-    padding: 0.7rem 1rem;
-    border-radius: 8px;
-    margin-bottom: 1.2rem;
-  }
-  .summary-meta span { font-weight: 600; color: var(--text); }
-  .summary-group-title {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-    font-weight: 600;
-    margin-bottom: 0.6rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .summary-group-title.cuida { color: var(--yes); }
-  .summary-group-title.no-cuida { color: var(--no); }
-  .summary-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.45rem 0.85rem;
-    border-radius: 8px;
-    font-size: 0.83rem;
-    font-weight: 500;
-    margin: 0.25rem 0.2rem;
-  }
-  .summary-pill.si { background: var(--yes-bg); color: var(--yes); border: 1px solid #b7e4c7; }
-  .summary-pill.no { background: var(--no-bg); color: var(--no); border: 1px solid #ffb3b3; }
-
-  /* Buttons */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.8rem 1.6rem;
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-  }
-  .btn-primary {
-    background: var(--primary);
-    color: #fff;
-    width: 100%;
-    justify-content: center;
-    margin-top: 1.2rem;
-  }
-  .btn-primary:hover { background: #2d5a40; transform: translateY(-1px); }
-  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-  .btn-ghost {
-    background: transparent;
-    color: var(--muted);
-    border: 1.5px solid var(--border);
-    font-size: 0.82rem;
-    padding: 0.55rem 1rem;
-  }
-  .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
-
-  .btn-export {
-    background: var(--accent);
-    color: var(--primary);
-    width: 100%;
-    justify-content: center;
-    margin-top: 0.7rem;
-  }
-  .btn-export:hover { background: #b8923a; transform: translateY(-1px); }
-
-  .actions-row {
-    display: flex;
-    gap: 0.7rem;
-    margin-top: 1.2rem;
-  }
-  .actions-row .btn { flex: 1; justify-content: center; }
-
-  /* Progress bar */
-  .progress-info {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.78rem;
-    color: var(--muted);
-    margin-bottom: 0.4rem;
-  }
-  .progress-bar {
-    width: 100%;
-    height: 5px;
-    background: var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 1.2rem;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--yes), #40916c);
-    border-radius: 10px;
-    transition: width 0.4s ease;
-  }
-
-  /* Empty state */
-  .empty { text-align: center; color: var(--muted); padding: 2rem; font-size: 0.88rem; }
-
-  /* Impresión toggle */
-  .impresion-block {
-    background: var(--accent2);
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 1rem 1.1rem;
-    margin-bottom: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-  .impresion-label {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-  }
-  .impresion-label .icon { font-size: 1.1rem; }
-  .impresion-toggle {
-    display: flex;
-    gap: 0.4rem;
-    flex-shrink: 0;
-  }
-  .imp-btn {
-    padding: 0.38rem 1rem;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 0.82rem;
-    font-weight: 600;
-    border: 1.5px solid;
-    cursor: pointer;
-    transition: all 0.18s;
-  }
-  .imp-btn.si { border-color: var(--yes); color: var(--yes); background: transparent; }
-  .imp-btn.si:hover, .imp-btn.si.active { background: var(--yes); color: #fff; }
-  .imp-btn.no { border-color: var(--no); color: var(--no); background: transparent; }
-  .imp-btn.no:hover, .imp-btn.no.active { background: var(--no); color: #fff; }
-  .summary-pill.imp-si { background: #e0f4ff; color: #1565c0; border: 1px solid #90caf9; }
-  .summary-pill.imp-no { background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8; }
-
-  /* Otros */
-  .otro-row {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 0.6rem;
-  }
-  .otro-input {
-    flex: 1;
-    padding: 0.7rem 1rem;
-    font-family: inherit;
-    font-size: 0.9rem;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    background: var(--bg);
-    color: var(--text);
-    transition: border-color 0.2s;
-  }
-  .otro-input:focus { outline: none; border-color: var(--primary); }
-  .otro-remove {
-    width: 32px; height: 32px;
-    border-radius: 8px;
-    border: 1.5px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    font-size: 1rem;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.2s;
-  }
-  .otro-remove:hover { border-color: var(--no); color: var(--no); background: var(--no-bg); }
-  .summary-pill.otro { background: #e8f4f8; color: #0d6efd; border: 1px solid #90caf9; }
-
-  /* Session counter */
-  .session-bar {
-    background: var(--primary);
-    color: rgba(255,255,255,0.85);
-    text-align: center;
-    font-size: 0.78rem;
-    padding: 0.45rem 1rem;
-    letter-spacing: 0.04em;
-  }
-  .session-bar span { color: var(--accent); font-weight: 700; }
-
-  .btn-excel {
-    background: #1d6f42;
-    color: #fff;
-    width: 100%;
-    justify-content: center;
-    margin-top: 0.7rem;
-  }
-  .btn-excel:hover { background: #155232; transform: translateY(-1px); }
-  .btn-excel:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-  @media (max-width: 480px) {
-    .card { padding: 1.4rem; }
-    .ayudante-row { flex-direction: column; align-items: flex-start; }
-    .toggle-group { width: 100%; }
-    .toggle-btn { flex: 1; text-align: center; }
-  }
+:root{--bg:#f5f2ee;--surface:#fff;--primary:#1a3a2a;--accent:#c8a96e;--accent2:#e8dcc8;--text:#1a1a1a;--muted:#6b6b6b;--border:#ddd8d0;--yes:#2d6a4f;--no:#9b2226;--yes-bg:#d8f3dc;--no-bg:#ffd6d6;--shadow:0 4px 24px rgba(0,0,0,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:var(--primary);color:#fff;padding:2.5rem 2rem 2rem;text-align:center}
+header .badge{display:inline-block;background:var(--accent);color:var(--primary);font-weight:600;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;padding:.3rem .9rem;border-radius:20px;margin-bottom:.9rem}
+header h1{font-family:"Playfair Display",serif;font-size:clamp(1.6rem,5vw,2.4rem)}
+.session-bar{background:var(--primary);color:rgba(255,255,255,.8);text-align:center;font-size:.78rem;padding:.45rem 1rem}
+.session-bar span{color:var(--accent);font-weight:700}
+.steps-bar{display:flex;align-items:center;justify-content:center;padding:1.2rem 1rem;background:var(--accent2);border-bottom:1px solid var(--border);flex-wrap:wrap;gap:.2rem}
+.step{display:flex;align-items:center;gap:.4rem;font-size:.78rem;font-weight:500;color:var(--muted)}
+.step.active{color:var(--primary)}.step.done{color:var(--yes)}
+.step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:600;background:var(--border);color:var(--muted);flex-shrink:0}
+.step.active .step-num{background:var(--primary);color:#fff}.step.done .step-num{background:var(--yes);color:#fff}
+.step-sep{color:var(--border);padding:0 .4rem}
+main{max-width:680px;margin:0 auto;padding:2rem 1rem 4rem}
+.card{background:var(--surface);border-radius:16px;padding:2rem;box-shadow:var(--shadow);margin-bottom:1.2rem;border:1px solid var(--border);animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.card-label{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:.5rem}
+.card h2{font-size:1.1rem;font-weight:600;margin-bottom:1.2rem}
+.select-wrap{position:relative;margin-bottom:1rem}
+select{width:100%;padding:.85rem 2.5rem .85rem 1rem;font-family:inherit;font-size:.95rem;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);appearance:none;cursor:pointer}
+select:focus{outline:none;border-color:var(--primary)}
+select:disabled{opacity:.45;cursor:not-allowed}
+.select-wrap::after{content:"▾";position:absolute;right:1rem;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.impresion-block{background:var(--accent2);border:1.5px solid var(--border);border-radius:12px;padding:1rem 1.1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.impresion-label{font-size:.9rem;font-weight:500}
+.impresion-toggle{display:flex;gap:.4rem;flex-shrink:0}
+.imp-btn{padding:.38rem 1rem;border-radius:8px;font-family:inherit;font-size:.82rem;font-weight:600;border:1.5px solid;cursor:pointer;transition:all .18s}
+.imp-btn.si{border-color:var(--yes);color:var(--yes);background:transparent}
+.imp-btn.si:hover,.imp-btn.si.active{background:var(--yes);color:#fff}
+.imp-btn.no{border-color:var(--no);color:var(--no);background:transparent}
+.imp-btn.no:hover,.imp-btn.no.active{background:var(--no);color:#fff}
+.progress-info{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:.4rem}
+.progress-bar{width:100%;height:5px;background:var(--border);border-radius:10px;overflow:hidden;margin-bottom:1.2rem}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--yes),#40916c);border-radius:10px;transition:width .4s ease}
+.ayudantes-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;margin-bottom:.9rem}
+.ayudante-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.9rem 1rem;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);margin-bottom:.7rem;transition:all .2s}
+.ayudante-row.answered-si{border-color:var(--yes);background:#f0fbf4}
+.ayudante-row.answered-no{border-color:var(--no);background:#fff5f5}
+.ayudante-info{flex:1;min-width:0}
+.ayudante-nombre{font-weight:500;font-size:.9rem}
+.ayudante-email{font-size:.75rem;color:var(--muted);margin-top:2px}
+.coord-badge{font-size:.65rem;background:var(--accent);color:var(--primary);font-weight:600;padding:.15rem .5rem;border-radius:20px;margin-left:.5rem}
+.toggle-group{display:flex;gap:.4rem;flex-shrink:0}
+.toggle-btn{padding:.38rem .85rem;border-radius:8px;font-family:inherit;font-size:.8rem;font-weight:600;border:1.5px solid;cursor:pointer;transition:all .18s}
+.toggle-btn.si{border-color:var(--yes);color:var(--yes);background:transparent}
+.toggle-btn.si:hover,.toggle-btn.si.active{background:var(--yes);color:#fff}
+.toggle-btn.no{border-color:var(--no);color:var(--no);background:transparent}
+.toggle-btn.no:hover,.toggle-btn.no.active{background:var(--no);color:#fff}
+.otro-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem}
+.otro-input{flex:1;padding:.7rem 1rem;font-family:inherit;font-size:.9rem;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text)}
+.otro-input:focus{outline:none;border-color:var(--primary)}
+.otro-remove{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.otro-remove:hover{border-color:var(--no);color:var(--no)}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.8rem 1.6rem;border-radius:10px;font-family:inherit;font-size:.9rem;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn-primary{background:var(--primary);color:#fff;width:100%;justify-content:center;margin-top:1.2rem}
+.btn-primary:hover{background:#2d5a40;transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--border);font-size:.82rem;padding:.55rem 1rem}
+.btn-ghost:hover{border-color:var(--primary);color:var(--primary)}
+.btn-export{background:var(--accent);color:var(--primary);width:100%;justify-content:center;margin-top:.7rem}
+.btn-export:hover{background:#b8923a;transform:translateY(-1px)}
+.btn-excel{background:#1d6f42;color:#fff;width:100%;justify-content:center;margin-top:.7rem}
+.btn-excel:hover{background:#155232;transform:translateY(-1px)}
+.actions-row{display:flex;gap:.7rem;margin-top:1.2rem}
+.actions-row .btn{flex:1;justify-content:center}
+#summary{display:none}
+#summary.visible{display:block}
+.summary-header{text-align:center;padding:1.5rem;background:linear-gradient(135deg,var(--primary),#2d5a40);border-radius:14px;color:#fff;margin-bottom:1.2rem}
+.summary-header .check{font-size:2.5rem;margin-bottom:.4rem}
+.summary-header h2{font-family:"Playfair Display",serif;font-size:1.4rem}
+.summary-header p{font-size:.85rem;opacity:.75;margin-top:.3rem}
+.summary-meta{font-size:.82rem;color:var(--muted);background:var(--accent2);padding:.7rem 1rem;border-radius:8px;margin-bottom:1.2rem}
+.summary-meta span{font-weight:600;color:var(--text)}
+.summary-group-title{font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;font-weight:600;margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem}
+.summary-group-title.cuida{color:var(--yes)}.summary-group-title.no-cuida{color:var(--no)}
+.summary-pill{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .85rem;border-radius:8px;font-size:.83rem;font-weight:500;margin:.25rem .2rem}
+.summary-pill.si{background:var(--yes-bg);color:var(--yes);border:1px solid #b7e4c7}
+.summary-pill.no{background:var(--no-bg);color:var(--no);border:1px solid #ffb3b3}
+.summary-pill.otro{background:#e0f4ff;color:#1565c0;border:1px solid #90caf9}
+.summary-pill.imp-si{background:#e0f4ff;color:#1565c0;border:1px solid #90caf9}
+.summary-pill.imp-no{background:#f3e5f5;color:#6a1b9a;border:1px solid #ce93d8}
+.empty{text-align:center;color:var(--muted);padding:1.5rem;font-size:.88rem}
+@media(max-width:480px){.card{padding:1.4rem}.ayudante-row{flex-direction:column;align-items:flex-start}.toggle-group{width:100%}.toggle-btn{flex:1;text-align:center}}
 </style>
 </head>
 <body>
-
 <header>
   <div class="badge">202610</div>
   <h1>Semana de Pruebas</h1>
 </header>
-
 <div class="session-bar">
   Registros en esta sesión: <span id="session-count">0</span> &nbsp;·&nbsp;
   <span id="session-hint">completa al menos uno para descargar Excel</span>
 </div>
-
 <div class="steps-bar">
-  <div class="step active" id="step1"><span class="step-num">1</span> Seleccionar curso</div>
+  <div class="step active" id="step1"><span class="step-num">1</span> Curso</div>
   <span class="step-sep">›</span>
   <div class="step" id="step2"><span class="step-num">2</span> Impresión</div>
   <span class="step-sep">›</span>
@@ -499,16 +111,86 @@
   <span class="step-sep">›</span>
   <div class="step" id="step4"><span class="step-num">4</span> Resumen</div>
 </div>
-
 <main>
-  <!-- STEP 1: Selección -->
   <div id="form-section">
     <div class="card">
       <div class="card-label">Paso 1</div>
       <h2>Seleccione el curso y sección</h2>
-      <div class="select-wrap" style="margin-bottom:1rem;">
+      <div class="select-wrap">
         <select id="sel-curso" onchange="onCursoChange()">
           <option value="">— Seleccione un curso —</option>
+            <option value="0">ADMIN DE PROYECTOS SOCIALES</option>
+  <option value="1">ADVANCED CORPORATE FINANCE</option>
+  <option value="2">ALGEBRA LINEAL</option>
+  <option value="3">ANALISIS FINANCIERO</option>
+  <option value="4">ANALITICA Y PROY. PARA MACRO.</option>
+  <option value="5">APPLIED PORTFOLIO MANAG.</option>
+  <option value="6">BUSINESS ENGLISH I</option>
+  <option value="7">BUSINESS ENGLISH III</option>
+  <option value="8">CALCULO I</option>
+  <option value="9">CALCULO II</option>
+  <option value="10">COMPETENCIA Y REGUL.DE MER.</option>
+  <option value="11">CONTABILIDAD I</option>
+  <option value="12">CONTABILIDAD II</option>
+  <option value="13">CORPORATE FINANCE</option>
+  <option value="14">CREACION DE NUEVOS PROD</option>
+  <option value="15">DATA ANALYTICS AVANZADO</option>
+  <option value="16">DATA ANALYTICS I</option>
+  <option value="17">DATA ANALYTICS II</option>
+  <option value="18">DATA ANALYTICS III</option>
+  <option value="19">DATA ANALYTICS IV</option>
+  <option value="20">DERECHO DE LA EMPRESA</option>
+  <option value="21">DESARROLLO ECONOMICO</option>
+  <option value="22">DIRECCION DE PERSONAS</option>
+  <option value="23">DYNAMIC GLOBAL FORCES</option>
+  <option value="24">ECONOMETRIA</option>
+  <option value="25">ECONOMIA PARA NO ESPECIALISTAS</option>
+  <option value="26">ENTREPRENEURSHIP & INNOVATION</option>
+  <option value="27">ESTADISTICAS I</option>
+  <option value="28">ESTADISTICAS II</option>
+  <option value="29">ESTRATEGIA COMPETITIVA</option>
+  <option value="30">ETICA DE LA EMPRESA</option>
+  <option value="31">EVALUACION DE PROY</option>
+  <option value="32">FINA. PARA NO ESPECIALISTAS I</option>
+  <option value="33">FUND. DEL EMPREND. Y LA INNOV.</option>
+  <option value="34">GESTION DE OPERACIONES</option>
+  <option value="35">GLOBAL BUSINESS ENVIRONMENTS</option>
+  <option value="36">IA APLICADA A FINANZAS</option>
+  <option value="37">IMPL. Y CONTROL DE GESTION</option>
+  <option value="38">INGLES II</option>
+  <option value="39">INGLES III</option>
+  <option value="40">INGLES IV</option>
+  <option value="41">INNOVACION I: DESDE LA IDEA AL</option>
+  <option value="42">INNOVACION III: TOPICOS DE INN</option>
+  <option value="43">INSERCION LABORAL</option>
+  <option value="44">INTRODUCCION A LA ECONOMIA</option>
+  <option value="45">INTRODUCCION A LA MICROECONOMIA</option>
+  <option value="46">LABORATORIO DE INVERSIONES</option>
+  <option value="47">LIDERAZGO Y GESTION DEL CAMBIO</option>
+  <option value="48">MACROECONOMIA I</option>
+  <option value="49">MACROECONOMIA II</option>
+  <option value="50">MACROECONOMICS I</option>
+  <option value="51">MACROECONOMICS II</option>
+  <option value="52">MARKETING DIGITAL</option>
+  <option value="53">MARKETING I</option>
+  <option value="54">MARKETING II</option>
+  <option value="55">METODOS EMPIRICOS MKTG</option>
+  <option value="56">MICROECONOMIA I</option>
+  <option value="57">MICROECONOMIA II</option>
+  <option value="58">MICROECONOMICS I</option>
+  <option value="59">NEGOCIACION</option>
+  <option value="60">OPTIMIZACION</option>
+  <option value="61">ORGANIZACION INDUSTRIAL</option>
+  <option value="62">PENSAMIENTO CRIT.EN ECONOMIA</option>
+  <option value="63">PRACTICA PROFESIONAL</option>
+  <option value="64">PRINCIPLES OF MICROECONOMICS</option>
+  <option value="65">PRINCIPLES OF ECONOMICS</option>
+  <option value="66">PRODUCTIVIDAD E INCENTIVOS</option>
+  <option value="67">PROYECTO DE MARKETING</option>
+  <option value="68">REGULACION FINANCIERA Y TOPICOS DE BANCA</option>
+  <option value="69">SUPPLY CHAIN MANAGEMENT</option>
+  <option value="70">TEORIA DE INVERSIONES</option>
+  <option value="71">VALORACION DE EMPRESAS Y PROY.</option>
         </select>
       </div>
       <div class="select-wrap">
@@ -517,25 +199,19 @@
         </select>
       </div>
     </div>
-
-    <!-- STEP 2: Impresión -->
-    <div class="card" id="impresion-card" style="display:none;">
+    <div class="card" id="impresion-card" style="display:none">
       <div class="card-label">Paso 2</div>
       <h2>¿Requiere impresión por la Facultad?</h2>
-      <div class="impresion-block" style="margin-bottom:0;">
-        <div class="impresion-label"><span class="icon">🖨️</span> Impresión de pruebas</div>
+      <div class="impresion-block">
+        <div class="impresion-label">🖨️ Impresión de pruebas</div>
         <div class="impresion-toggle">
           <button class="imp-btn si" id="imp-si" onclick="marcarImpresion('si')">Sí</button>
           <button class="imp-btn no" id="imp-no" onclick="marcarImpresion('no')">No</button>
         </div>
       </div>
-      <button class="btn btn-primary" id="btn-siguiente" disabled onclick="mostrarAyudantes()">
-        Continuar →
-      </button>
+      <button class="btn btn-primary" id="btn-siguiente" disabled onclick="mostrarAyudantes()">Continuar →</button>
     </div>
-
-    <!-- STEP 3: Ayudantes -->
-    <div class="card" id="ayudantes-card" style="display:none;">
+    <div class="card" id="ayudantes-card" style="display:none">
       <div class="card-label">Paso 3</div>
       <h2>¿Quién cuidará la prueba?</h2>
       <div class="progress-info">
@@ -545,23 +221,14 @@
       <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
       <div class="ayudantes-title">Ayudantes asignados</div>
       <div id="ayudantes-list"></div>
-
-      <!-- Otras personas -->
-      <div style="margin-top:1.2rem;">
-        <div class="ayudantes-title" style="margin-bottom:0.6rem;">Otras personas que cuidarán la prueba</div>
+      <div style="margin-top:1.2rem">
+        <div class="ayudantes-title" style="margin-bottom:.6rem">Otras personas que cuidarán la prueba</div>
         <div id="otros-list"></div>
-        <button class="btn btn-ghost" style="width:100%; margin-top:0.6rem; font-size:0.85rem;" onclick="agregarOtro()">
-          + Agregar otra persona
-        </button>
+        <button class="btn btn-ghost" style="width:100%;margin-top:.6rem;font-size:.85rem" onclick="agregarOtro()">+ Agregar otra persona</button>
       </div>
-
-      <button class="btn btn-primary" id="btn-confirmar" disabled onclick="confirmar()">
-        Enviar →
-      </button>
+      <button class="btn btn-primary" id="btn-confirmar" disabled onclick="confirmar()">Enviar →</button>
     </div>
   </div>
-
-  <!-- STEP 3: Summary -->
   <div id="summary">
     <div class="summary-header">
       <div class="check">✓</div>
@@ -569,173 +236,65 @@
       <p id="sum-meta-header"></p>
     </div>
     <div class="summary-meta" id="sum-meta"></div>
-
     <div class="card">
-      <div class="summary-group-title" style="color:#1565c0; margin-bottom:0.6rem;">🖨️ Impresión por Facultad</div>
-      <div id="sum-impresion"></div>
-      <br>
+      <div class="summary-group-title" style="color:#1565c0;margin-bottom:.6rem">🖨️ Impresión por Facultad</div>
+      <div id="sum-impresion"></div><br>
       <div class="summary-group-title cuida">✔ Cuidarán la prueba</div>
-      <div id="sum-si"><div class="empty">Ninguno marcado</div></div>
-      <br>
-      <div class="summary-group-title cuida" id="sum-otros-title" style="display:none;">👤 Otras personas</div>
-      <div id="sum-otros"></div>
-      <br>
+      <div id="sum-si"><div class="empty">Ninguno marcado</div></div><br>
+      <div class="summary-group-title cuida" id="sum-otros-title" style="display:none">👤 Otras personas</div>
+      <div id="sum-otros"></div><br>
       <div class="summary-group-title no-cuida">✘ No cuidarán la prueba</div>
       <div id="sum-no"><div class="empty">Ninguno marcado</div></div>
     </div>
-
     <div class="actions-row">
       <button class="btn btn-ghost" onclick="reiniciar()">← Volver a editar</button>
       <button class="btn btn-export" onclick="exportarTexto()">📋 Copiar resumen</button>
     </div>
-    <button class="btn btn-excel" onclick="descargarExcel()">📥 Descargar CSV con todos los registros</button>
+    <button class="btn btn-excel" onclick="descargarExcel()">📥 Descargar Excel</button>
   </div>
 </main>
-
 <script>
-const POWER_AUTOMATE_URL = "https://defaultb91e1a9b47184623882e6fb655d96b.f0.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6001f308890547c3ba91016527120c1f/triggers/manual/paths/invoke?api-version=1";"ADMIN DE PROYECTOS SOCIALES": {"GONZALEZ XIMENA": [{"nombre": "BARBARA CAMILA ESPINOZA MANRIQUEZ", "correo": "bcespinoza@miuandes.cl", "coordinador": false}, {"nombre": "JAVIERA HASBÚN GIANCÁSPERO", "correo": "jbhasbun@miuandes.cl", "coordinador": false}]}, "ADVANCED CORPORATE FINANCE": {"ERRAZURIZ MAURICIO": [{"nombre": "JOSÉ PEDRO TERRAZAS CORTÉS", "correo": "jpterrazas@miuandes.cl", "coordinador": false}]}, "ALGEBRA LINEAL": {"SALAS SOFIA AGUSTINA": [{"nombre": "FELIPE CORREAL POSADA", "correo": "fcorreal@miuandes.cl", "coordinador": false}, {"nombre": "GUSTAVO  ERRÁZURIZ GARCÍA", "correo": "gerrazuriz@miuandes.cl", "coordinador": false}, {"nombre": "MAGDALENA  CAMPAÑA SEPÚLVEDA", "correo": "macampana@miuandes.cl", "coordinador": true}, {"nombre": "MARÍA JESÚS  VALENZUELA  LARRAÍN", "correo": "mjvalenzuela7@miuandes.cl", "coordinador": false}]}, "ANALISIS FINANCIERO": {"ORTEGA SERGIO": [{"nombre": "CATALINA TAGLE DÍAZ", "correo": "cmtagle@miuandes.cl", "coordinador": false}, {"nombre": "FLORENCIA URMENETA CAMPOS", "correo": "fturmeneta@miuandes.cl", "coordinador": false}], ". VINCENT": [{"nombre": "IGNACIO ALCAYAGA MUÑOZ", "correo": "inalcayaga@miuandes.cl", "coordinador": true}, {"nombre": "JAIME EYZAGUIRRE DÍAZ", "correo": "Jeyzaguirre2@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA AMALIA  ZUÑIGA  MARINOVIC", "correo": "mazuiga@miuandes.cl", "coordinador": false}, {"nombre": "MAXIMO  GORZIGLIA MUZARD", "correo": "mjgorziglia1@miuandes.cl", "coordinador": false}, {"nombre": "OLIVIA BARCELO ROJAS", "correo": "Omrojas@miuandes.cl", "coordinador": false}, {"nombre": "SANTIAGO DECOMBE IZQUIERDO", "correo": "sdecombe@miuandes.cl", "coordinador": false}]}, "ANALITICA Y PROY. PARA MACRO.": {"TAPIA ANDRES": [{"nombre": "SOFÍA VENEGAS REYES", "correo": "svenegas2@miuandes.cl", "coordinador": false}]}, "APPLIED PORTFOLIO MANAG.": {"PEREZ MARIO ALEJANDRO": [{"nombre": "NICOLAS SOTOMAYOR MATTE", "correo": "nsotomayor@miuandes.cl", "coordinador": false}, {"nombre": "MARIA JOSÉ ROMÁN", "correo": "mjroman1@miuandes.cl", "coordinador": false}]}, "BUSINESS ENGLISH I": {"MONTANE MARCELA": [{"nombre": "COLOMBA REINECKE CLARK", "correo": "Cmreinecke@miuandes.cl", "coordinador": false}, {"nombre": "SOFÍA  GUERRERO  LECAROS", "correo": "sbguerrero@miuandes.cl", "coordinador": false}]}, "BUSINESS ENGLISH III": {"MONTANE MARCELA": [{"nombre": "MARGARITA SILVA PEIRANO", "correo": "mmsilva5@miuandes.cl", "coordinador": false}], "THOMSON SAMUEL .": [{"nombre": "MATHIAS HOPPE OTTEN", "correo": "m.hoppe@miuandes.cl", "coordinador": false}]}, "CALCULO I": {"UNDURRAGA ALEJANDRA": [{"nombre": "AGUSTÍN LASTRADE HOT", "correo": "ajlastrade@miuandes.cl", "coordinador": false}, {"nombre": "EMILIA SOTO GAETE", "correo": "mesoto3@miuandes.cl", "coordinador": false}, {"nombre": "EMILIA ULRIKSEN GARCIA", "correo": "e.ulriksen@miuandes.cl", "coordinador": false}, {"nombre": "JUAN JOSÉ  MORENO  PINTO", "correo": "jjmoreno@miuandes.cl", "coordinador": false}, {"nombre": "MARGARITA LIRA LETELIER", "correo": "Mlira5@miuandes.cl", "coordinador": false}, {"nombre": "MARIA ELISA MOZÓ DOMINGUEZ", "correo": "memozo@miuandes.cl", "coordinador": false}], "NAVARRO MARIO": [{"nombre": "DANIEL  CORREA GHIRARDELLI", "correo": "Djcorrea@miuandes.cl", "coordinador": false}, {"nombre": "JUAN PEDRO RETAMAL FAURE", "correo": "jpretamal@miuandes.cl", "coordinador": false}, {"nombre": "SOFÍA  GUERRERO  LECAROS", "correo": "sbguerrero@miuandes.cl", "coordinador": false}, {"nombre": "TOMAS BENJAMIN CORREA DIAZ", "correo": "tbcorrea@miuandes.cl", "coordinador": false}]}, "CALCULO II": {"UNDURRAGA ALEJANDRA": [{"nombre": "GUILLERMO NIETO GONZALEZ", "correo": "gnieto1@miuandes.cl", "coordinador": false}, {"nombre": "VALENTINA  DICKSTEIN  MANDIL", "correo": "vsdickstein@miuandes.cl", "coordinador": false}], "NAVARRO MARIO": [{"nombre": "VALENTINA ORTIZ  FUENTES", "correo": "Vcortiz@miuandes.cl", "coordinador": false}]}, "COMPETENCIA Y REGUL.DE MER.": {"CARRASCO NICOLAS FELIPE": [{"nombre": "MARIA IGNACIA CALDERON ARANCIBIA", "correo": "micalderon@miuandes.cl", "coordinador": false}]}, "CONTABILIDAD I": {"HEIMLICH ROBERT": [{"nombre": "ALVARO SANTIAGO DAZA RIVERA", "correo": "asdaza@miuandes.cl", "coordinador": false}, {"nombre": "CRISTOBAL MEYER CORONADO", "correo": "cmeyer@miuandes.cl", "coordinador": false}, {"nombre": "DIEGO JOSÉ RIQUELME LANGER", "correo": "djriquelme@miuandes.cl", "coordinador": false}, {"nombre": "JUAN CARLOS PIÑONES CURGUAN", "correo": "jcpinones@miuandes.cl", "coordinador": false}], "TAGLE JOSE": [{"nombre": "ANTONIA  ABREGO  VÁSQUEZ", "correo": "aabrego@miuandes.cl", "coordinador": false}, {"nombre": "MANUEL JOSÉ CORREA OVALLE", "correo": "Mjcorrea8@miuandes.cl", "coordinador": false}], "MORENO RAQUEL DEL CARMEN": [{"nombre": "DOMINGO VALENZUELA SANDOVAL", "correo": "djvalenzuela1@miuandes.cl", "coordinador": false}, {"nombre": "JUAN MEX PEREZ", "correo": "jemex@miuandes.cl", "coordinador": false}, {"nombre": "NICOLÁS MOYA GALLEGUILLOS", "correo": "namoya1@miuandes.cl", "coordinador": false}], "ARAYA HAROLD": [{"nombre": "IGNACIO MUÑOZ GUZMÁN", "correo": "iamuoz4@miuandes.cl", "coordinador": false}, {"nombre": "JUAN PABLO MARTINEZ DEBARBIERI", "correo": "jpmartinez4@miuandes.cl", "coordinador": false}, {"nombre": "MARTINA  VALENZUELA  DELFAU", "correo": "mvalenzuela27@miuandes.cl", "coordinador": false}, {"nombre": "RENATA  GONZALEZ  AVENDAÑO", "correo": "Ragonzalez17@miuandes.cl", "coordinador": false}]}, "CONTABILIDAD II": {"PURCELL NICOLAS": [{"nombre": "CECILIA CORTÉS-MONROY ROMERO", "correo": "cccortesmonroy@miuandes.cl", "coordinador": false}, {"nombre": "DEBORA  MIÑO DÍAZ", "correo": "dimio@miuandes.cl", "coordinador": false}, {"nombre": "JUAN PABLO MARTINEZ DEBARBIERI", "correo": "jpmartinez4@miuandes.cl", "coordinador": false}, {"nombre": "SIMÓN  BARCELÓ  PORTALUPPI", "correo": "sbarcelo@miuandes.cl", "coordinador": false}]}, "CORPORATE FINANCE": {"REID ANDRE": [{"nombre": "DOMINGA  CONCHA VILDÓSOLA", "correo": "dmconcha@miuandes.cl", "coordinador": false}, {"nombre": "ISIDORA PINTO MUÑOZ", "correo": "ippinto@miuandes.cl", "coordinador": false}]}, "CREACION DE NUEVOS PROD": {"NAVARRO TERESA": [{"nombre": "ALEJANDRA  LACÁMARA IRARRÁZAVAL", "correo": "malacamara@miuandes.cl", "coordinador": false}]}, "DATA ANALYTICS AVANZADO": {"REYES MATIAS JOSE": [{"nombre": "JUAN UNDURRAGA ERRAZURIZ", "correo": "Jlundurraga@miuandes.cl", "coordinador": false}, {"nombre": "STEFANNO CASELLA CABRERA", "correo": "Scasella@miuandes.cl", "coordinador": false}]}, "DATA ANALYTICS I": {"MARCHANT ARTURO": [{"nombre": "CECILIA CORTÉS-MONROY ROMERO", "correo": "cccortesmonroy@miuandes.cl", "coordinador": false}, {"nombre": "FRANCISCA  HERRERA GONZALEZ", "correo": "fcherrera@miuandes.cl", "coordinador": false}, {"nombre": "SIMÓN  BARCELÓ  PORTALUPPI", "correo": "sbarcelo@miuandes.cl", "coordinador": false}, {"nombre": "SOFIA ONETO LAGOS", "correo": "soneto@miuandes.cl", "coordinador": false}], "FASCHING DANIEL": [{"nombre": "EMILIA ULRIKSEN GARCIA", "correo": "e.ulriksen@miuandes.cl", "coordinador": false}, {"nombre": "JAIME EYZAGUIRRE DÍAZ", "correo": "Jeyzaguirre2@miuandes.cl", "coordinador": false}], "VALENZUELA JORGE": [{"nombre": "FERNANDA  FREUDE ENSIGNIA", "correo": "fafreude@miuandes.cl", "coordinador": false}, {"nombre": "FRANCISCO ELTIT CORDERO", "correo": "fjeltit@miuandes.cl", "coordinador": false}, {"nombre": "JUAN CARLOS PIÑONES CURGUAN", "correo": "jcpinones@miuandes.cl", "coordinador": false}, {"nombre": "PABLO INFANTE CANALES", "correo": "piinfante@miuandes.cl", "coordinador": false}], "CUEVAS FRANCISCO DE ASIS": [{"nombre": "MARÍA JESÚS  VALENZUELA  LARRAÍN", "correo": "mjvalenzuela7@miuandes.cl", "coordinador": false}, {"nombre": "MATILDE ANTONIA MÉNDEZ PINO", "correo": "mamendez3@miuandes.cl", "coordinador": false}]}, "DATA ANALYTICS II": {"DUENAS NISSIM": [{"nombre": "ABEL CARVAJAL VERGARA", "correo": "Afcarvajal@miuandes.cl", "coordinador": false}, {"nombre": "DOMINGO VALENZUELA SANDOVAL", "correo": "djvalenzuela1@miuandes.cl", "coordinador": false}, {"nombre": "MARIA ELISA MOZÓ DOMINGUEZ", "correo": "memozo@miuandes.cl", "coordinador": false}], "ALBERTO": [{"nombre": "BELTRAN MENDOZA HIDALGO", "correo": "b.mendoza@miuandes.cl", "coordinador": false}, {"nombre": "GUSTAVO  ERRÁZURIZ GARCÍA", "correo": "gerrazuriz@miuandes.cl", "coordinador": false}], "LITVAK SERGIO": [{"nombre": "FELIPE  SOTO MATUS", "correo": "fasoto7@miuandes.cl", "coordinador": false}, {"nombre": "CATALINA TAGLE DÍAZ", "correo": "cmtagle@miuandes.cl", "coordinador": false}, {"nombre": "MATILDE ANTONIA MÉNDEZ PINO", "correo": "mamendez3@miuandes.cl", "coordinador": false}], "LORCA KURT": [{"nombre": "JOSEFA BENCINI VIVAR", "correo": "jbencini@miuandes.cl", "coordinador": true}, {"nombre": "SANTIAGO BUSTOS CORTEZ", "correo": "sbustos2@miuandes.cl", "coordinador": false}, {"nombre": "GABRIEL NEIRA VEGA", "correo": "geneira@miuandes.cl", "coordinador": false}]}, "DATA ANALYTICS III": {"MARCHANT ARTURO": [{"nombre": "DOMINGO VALENZUELA SANDOVAL", "correo": "djvalenzuela1@miuandes.cl", "coordinador": false}, {"nombre": "JOAQUÍN STORMESAN DIAZ", "correo": "jistormesan@miuandes.cl", "coordinador": false}, {"nombre": "JUAN PEDRO RETAMAL FAURE", "correo": "jpretamal@miuandes.cl", "coordinador": false}]}, "DATA ANALYTICS IV": {"DE LA CRUZ ALEXIS MANUEL": [{"nombre": "DEBORA  MIÑO DÍAZ", "correo": "dimio@miuandes.cl", "coordinador": false}, {"nombre": "EMILIA WELKNER GAJARDO", "correo": "eawelkner@miuandes.cl", "coordinador": false}, {"nombre": "SAYEN SOBRAL MORALES", "correo": "ssobral@miuandes.cl", "coordinador": false}]}, "DERECHO DE LA EMPRESA": {"AGUILERA RAIMUNDO": [{"nombre": "ANITA MARIA LYON VIAL", "correo": "amlyon@miuandes.cl", "coordinador": false}, {"nombre": "SIMONETTA PAZ MANCINI RODRIGUEZ", "correo": "Sprodriguez@miuandes.cl", "coordinador": false}], "VILLANUEVA FELIPE": [{"nombre": "STEFANNO CASELLA CABRERA", "correo": "Scasella@miuandes.cl", "coordinador": false}]}, "DESARROLLO ECONOMICO": {"FERNANDEZ MAURICIO ANDRES": [{"nombre": "SOFIA SCHUSTER MIRANDA", "correo": "sschuster@fen.uchile.cl", "coordinador": false}]}, "DIRECCION DE PERSONAS": {"GONZALEZ FELIPE ANDRES": [{"nombre": "FERNANDA  FREUDE ENSIGNIA", "correo": "fafreude@miuandes.cl", "coordinador": false}, {"nombre": "FRANCISCA  HERRERA GONZALEZ", "correo": "fcherrera@miuandes.cl", "coordinador": false}]}, "DYNAMIC GLOBAL FORCES": {"ANDRE": [{"nombre": "BERNARDITA  PAROT NAYLOR", "correo": "b.parot@miuandes.cl", "coordinador": false}, {"nombre": "JAVIERA CRUZ GONZÁLEZ", "correo": "jacruz3@miuandes.cl", "coordinador": false}, {"nombre": "MARIA BELEN SUAZO MANRIQUEZ", "correo": "mbsuazo@miuandes.cl", "coordinador": false}]}, "ECONOMETRIA": {"OSORIO JORGE": [{"nombre": "CARLOS PIRELA HERNÁNDEZ", "correo": "cepirela@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA EMILIA  NEUT  CORREA", "correo": "meneut@miuandes.cl", "coordinador": true}, {"nombre": "MARTIN DI BIASE ORMICK", "correo": "Madibiase@miuandes.cl", "coordinador": false}], "VALDES JOSE MANUEL": [{"nombre": "DOMINGA QUIJADA MORA", "correo": "dquijada@miuandes.cl", "coordinador": false}, {"nombre": "FRANCISCO INFANTE SERRANO", "correo": "fjinfante@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA LUISA INFANTE PINILLA", "correo": "Mlinfante@miuandes.cl", "coordinador": false}]}, "ECONOMIA PARA NO ESPECIALISTAS": {"HERRERA JOSE MIGUEL": [{"nombre": "MARIA ANTONIA ERRAZURIZ GASTELLU", "correo": "merrazuriz2@miuandes.cl", "coordinador": false}]}, "ENTREPRENEURSHIP & INNOVATION": {"FLORES FRANCISCO JAVIER": [{"nombre": "JUAN CARLOS PIÑONES CURGUAN", "correo": "jcpinones@miuandes.cl", "coordinador": false}, {"nombre": "RENATA  GARRIDO REBOLLEDO", "correo": "rpgarrido@miuandes.cl", "coordinador": false}, {"nombre": "RENATA  GONZALEZ  AVENDAÑO", "correo": "Ragonzalez17@miuandes.cl", "coordinador": false}, {"nombre": "ROBERT FABRICIO GARECA PERALTA", "correo": "rfgareca@miuandes.cl", "coordinador": false}]}, "ESTADISTICAS I": {"ESPINOZA JORGE LUIS": [{"nombre": "ALEXANDER  SCHAUB  VARGAS", "correo": "a.schaub@miuandes.cl", "coordinador": false}, {"nombre": "BELTRAN MENDOZA HIDALGO", "correo": "b.mendoza@miuandes.cl", "coordinador": false}, {"nombre": "DANIELA CASTILLO BONO", "correo": "Dacastillo1@miuandes.cl", "coordinador": false}, {"nombre": "FERNANDA VILLALOBOS ARAYA", "correo": "fvillalobos4@miuandes.cl", "coordinador": false}, {"nombre": "MARIA ELISA MOZÓ DOMINGUEZ", "correo": "memozo@miuandes.cl", "coordinador": false}, {"nombre": "SIMÓN  BARCELÓ  PORTALUPPI", "correo": "sbarcelo@miuandes.cl", "coordinador": true}], "MENEGHELLO CECILIA": [{"nombre": "CATALINA TAGLE DÍAZ", "correo": "cmtagle@miuandes.cl", "coordinador": false}, {"nombre": "DOMINGA LIRA VALENZUELA", "correo": "Dlira@miuandes.cl", "coordinador": false}], "GAGGERO JOSEFINA": [{"nombre": "FERNANDA MARCHANT MARAÑON", "correo": "fjmarchant@miuandes.cl", "coordinador": false}, {"nombre": "SOFÍA  POLANCO MEZZANO", "correo": "spolanco@miuandes.cl", "coordinador": false}]}, "ESTADISTICAS II": {"QUEZADA IGNACIO": [{"nombre": "FRESCIA MUÑOZ ALFARO", "correo": "fdmuoz@miuandes.cl", "coordinador": true}, {"nombre": "MIKAELA SMITH BURGOS", "correo": "Masmith@miuandes.cl", "coordinador": false}, {"nombre": "TOMÁS KIMBER DASTRES", "correo": "tikimber@miuandes.cl", "coordinador": false}], "LIZZANO SEBASTIAN ALBERTO": [{"nombre": "ISIDORA  VARGAS  ÁVILA", "correo": "iavargas@miuandes.cl", "coordinador": false}, {"nombre": "JUAN ENRIQUE  SWINBURN  CORREA", "correo": "jeswinburn@miuandes.cl", "coordinador": false}, {"nombre": "MARTINA  CARVALLO RAMÍREZ", "correo": "Mcarvallo2@miuandes.cl", "coordinador": false}]}, "ESTRATEGIA COMPETITIVA": {"PICASSO FRANCISCO JOSE": [{"nombre": "AGUSTÍN CORREA ULRIKSEN", "correo": "acorrea8@miuandes.cl", "coordinador": false}, {"nombre": "CLAUDIA CID RODRÍGUEZ", "correo": "cacid4@miuandes.cl", "coordinador": false}, {"nombre": "JAIME JULIO AGUIRRE  ALAMO", "correo": "jjaguirre@miuandes.cl", "coordinador": false}, {"nombre": "MARIO ZABALA CARVAJAL", "correo": "mjzabala1@miuandes.cl", "coordinador": false}, {"nombre": "PABLO INFANTE CANALES", "correo": "piinfante@miuandes.cl", "coordinador": false}]}, "ETICA DE LA EMPRESA": {"BEROIZA MARIA TRINIDAD": [{"nombre": "NATALIA  RUCAN RUCAN", "correo": "narucan@miuandes.cl", "coordinador": false}, {"nombre": "STEFANNO CASELLA CABRERA", "correo": "Scasella@miuandes.cl", "coordinador": false}], "MAINGUYAGUE JOSE LUIS": [{"nombre": "TOMÁS SAAVEDRA SABAT", "correo": "tisaavedra@miuandes.cl", "coordinador": false}]}, "EVALUACION DE PROY": {". ELISABETH WEST": [{"nombre": "MARIA BELEN SUAZO MANRIQUEZ", "correo": "mbsuazo@miuandes.cl", "coordinador": false}]}, "FINA. PARA NO ESPECIALISTAS I": {"DE LA CRUZ ALEXIS MANUEL": [{"nombre": "CRISTIÁN BARRIENTOS ZILLERUELO", "correo": "cbarrientos1@miuandes.cl", "coordinador": false}, {"nombre": "LUCAS  SEKUL  CABRERA", "correo": "lsekul@miuandes.cl", "coordinador": false}], "IBAÑEZ CRISTIAN .": [{"nombre": "MATEO  LOPEZ SAVI", "correo": "Mlopez22@miuandes.cl", "coordinador": false}, {"nombre": "SAYEN SOBRAL MORALES", "correo": "ssobral@miuandes.cl", "coordinador": false}]}, "FUND. DEL EMPREND. Y LA INNOV.": {"DEL PEDREGAL JUAN PABLO": [{"nombre": "ALINA  COTERILLO RIQUELME", "correo": "acoterillo@miuandes.cl", "coordinador": false}, {"nombre": "MARIA ELISA  CUADRADO  AGUIRRE", "correo": "Mecuadrado1@miuandes.cl", "coordinador": false}], "MERINO CATALINA": [{"nombre": "ANTONIA BECERRA CARRASCO", "correo": "ajbecerra@miuandes.cl", "coordinador": false}, {"nombre": "JAVIER RODRIGO MANDUJANO ASTA-BURUAGA", "correo": "JRmandujano@miuandes.cl", "coordinador": false}], "GELSAM PAULA ANDREA": [{"nombre": "CECILIA CORTÉS-MONROY ROMERO", "correo": "cccortesmonroy@miuandes.cl", "coordinador": false}, {"nombre": "HELENA BARRERA STEINBRECHER", "correo": "hebarrera@miuandes.cl", "coordinador": false}], "ARAVENA ANTONELLA": [{"nombre": "DEBORA  MIÑO DÍAZ", "correo": "dimio@miuandes.cl", "coordinador": false}, {"nombre": "MILÉN CONTRERAS  MORALES", "correo": "macontreras4@miuandes.cl", "coordinador": false}]}, "GESTION DE OPERACIONES": {"GIWERCMAN LEONARDO DAVID": [{"nombre": "DALIDA FAKHREDDINE PARADA", "correo": "dfakhreddine@miuandes.cl", "coordinador": false}, {"nombre": "JUAN UNDURRAGA ERRAZURIZ", "correo": "Jlundurraga@miuandes.cl", "coordinador": false}]}, "GLOBAL BUSINESS ENVIRONMENTS": {". ELISABETH WEST": [{"nombre": "CATALINA ANDREA DELAVEAU EFFA", "correo": "cadelaveau@miuandes.cl", "coordinador": false}, {"nombre": "DANIELA RAMÍREZ CASTRO", "correo": "dvramirez2@miuandes.cl", "coordinador": false}, {"nombre": "ROBERT FABRICIO GARECA PERALTA", "correo": "rfgareca@miuandes.cl", "coordinador": false}, {"nombre": "VALENTINA ORTIZ  FUENTES", "correo": "Vcortiz@miuandes.cl", "coordinador": false}]}, "IA APLICADA A FINANZAS": {"RODRIGUEZ MIGUEL ANDRES": [{"nombre": "SILKE SCHWARTZ BAZÁN", "correo": "Svschwartz@miuandes.cl", "coordinador": false}]}, "IMPL. Y CONTROL DE GESTION": {"ESPINOSA SEBASTIAN": [{"nombre": "ANTONELLA TOMARELLI CRUZAT", "correo": "astomarelli@miuandes.cl", "coordinador": false}], "PEREZ MARIO ALEJANDRO": [{"nombre": "EMILIA ARTEAGA BERTHOLET", "correo": "Earteaga@miuandes.cl", "coordinador": false}, {"nombre": "PASCALE  GRELLET MOYA", "correo": "Psgrellet@miuandes.cl", "coordinador": false}]}, "INGLES II": {"WAHLING PAULINA": [{"nombre": "JUAN JOSÉ  MORENO  PINTO", "correo": "jjmoreno@miuandes.cl", "coordinador": false}, {"nombre": "SAYEN SOBRAL MORALES", "correo": "ssobral@miuandes.cl", "coordinador": false}]}, "INGLES III": {"MONTANE MARCELA": [{"nombre": "MARGARITA SILVA PEIRANO", "correo": "mmsilva5@miuandes.cl", "coordinador": false}], "OJEDA JANE": [{"nombre": "ALINA  COTERILLO RIQUELME", "correo": "acoterillo@miuandes.cl", "coordinador": false}, {"nombre": "JUAN JOSÉ  MORENO  PINTO", "correo": "jjmoreno@miuandes.cl", "coordinador": false}]}, "INGLES IV": {"STEWART SCOTT WILLIAM": [{"nombre": "IGNACIO ALCAYAGA MUÑOZ", "correo": "inalcayaga@miuandes.cl", "coordinador": false}, {"nombre": "SANTIAGO ANDRES ASTABURUAGA BRISEÑO", "correo": "saastaburuaga@miuandes.cl", "coordinador": false}]}, "INNOVACION I: DESDE LA IDEA AL": {"KHIANEY ANIL": [{"nombre": "Alessandro Figueroa Pozo", "correo": "amfigueroa2@miuandes.cl", "coordinador": false}], "SNEBERGER GUILLERMO": [{"nombre": "MAIRA FIGUEROA URRUTIA", "correo": "mefigueroa@miuandes.cl", "coordinador": false}]}, "INNOVACION III: TOPICOS DE INN": {"MARAMBIO PAULA JACINTA": [{"nombre": "Alessandro Figueroa Pozo", "correo": "amfigueroa2@miuandes.cl", "coordinador": false}], "ESCOBEDO IGNACIO FELIPE": [{"nombre": "MAIRA FIGUEROA URRUTIA", "correo": "mefigueroa@miuandes.cl", "coordinador": false}]}, "INSERCION LABORAL": {"FERRER MATIAS": [{"nombre": "CATALINA CUADRA ROJAS", "correo": "cacuadra@miuandes.cl", "coordinador": false}, {"nombre": "JOSÉ PEDRO TERRAZAS CORTÉS", "correo": "jpterrazas@miuandes.cl", "coordinador": false}, {"nombre": "JOSEFINA NAVARRETE ORTEGA", "correo": "jdnavarrete@miuandes.cl", "coordinador": false}, {"nombre": "PAULA NAVARRO SÁNCHEZ", "correo": "pjnavarro@miuandes.cl", "coordinador": false}, {"nombre": "SANTIAGO  REYES  LARRAÍN", "correo": "sreyes@miuandes.cl", "coordinador": false}]}, "INTRODUCCION A LA ECONOMIA": {"CARRASCO NICOLAS FELIPE": [{"nombre": "TOMÁS SALINAS PALACIOS", "correo": "Tsalinas1@miuandes.cl", "coordinador": false}, {"nombre": "VALENTINA  DICKSTEIN  MANDIL", "correo": "vsdickstein@miuandes.cl", "coordinador": false}, {"nombre": "CARLOS PIRELA HERNÁNDEZ", "correo": "cepirela@miuandes.cl", "coordinador": false}, {"nombre": "IGNACIO ALONSO MARTÍNEZ MORENO", "correo": "iamartinez2@miuandes.cl", "coordinador": false}, {"nombre": "ISABELLA  TORRES  ABECASIS", "correo": "Itorres1@miuandes.cl", "coordinador": false}, {"nombre": "ISIDORA  VARGAS  AVILA", "correo": "iavargas@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA LUISA INFANTE PINILLA", "correo": "Mlinfante@miuandes.cl", "coordinador": false}, {"nombre": "MARTIN  RUIZ INOSTROZA", "correo": "Maruiz4@miuandes.cl", "coordinador": false}, {"nombre": "RAÚL LAGOMARSINO SANDOYA", "correo": "rlagomarsino@miuandes.cl", "coordinador": false}, {"nombre": "SOFÍA  CORTEZ MOSCOSO", "correo": "scortez1@miuandes.cl", "coordinador": false}]}, "INTRODUCCION A LA MICROECONOMIA": {"RAMIREZ VERONICA": [{"nombre": "CARLOS PIRELA HERNÁNDEZ", "correo": "cepirela@miuandes.cl", "coordinador": false}, {"nombre": "FRANCISCO ELTIT CORDERO", "correo": "fjeltit@miuandes.cl", "coordinador": false}, {"nombre": "IGNACIO ALONSO MARTÍNEZ MORENO", "correo": "iamartinez2@miuandes.cl", "coordinador": false}, {"nombre": "ISIDORA  VARGAS  AVILA", "correo": "iavargas@miuandes.cl", "coordinador": false}, {"nombre": "SEBASTIAN IGNACIO CARRASCO DONOSO", "correo": "sicarrasco@miuandes.cl", "coordinador": false}]}, "LABORATORIO DE INVERSIONES": {"PEREZ MARIO ALEJANDRO": [{"nombre": "FRANCESCO SCAGLIOTTI SALEH", "correo": "flscagliotti@miuandes.cl", "coordinador": false}, {"nombre": "FRESCIA MUÑOZ ALFARO", "correo": "fdmuoz@miuandes.cl", "coordinador": false}, {"nombre": "JUAN UNDURRAGA ERRAZURIZ", "correo": "Jlundurraga@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA EMILIA JARA VERDUGO", "correo": "mejara1@miuandes.cl", "coordinador": false}, {"nombre": "MILÉN CONTRERAS  MORALES", "correo": "macontreras4@miuandes.cl", "coordinador": false}, {"nombre": "RAÚL LAGOMARSINO SANDOYA", "correo": "rlagomarsino@miuandes.cl", "coordinador": false}]}, "LIDERAZGO Y GESTION DEL CAMBIO": {"HERNANDEZ LUISA": [{"nombre": "RAIMUNDO  DÍAZ SOLARI", "correo": "rjdiaz2@miuandes.cl", "coordinador": false}], "ROZAS GONZALO FELIPE": [{"nombre": "SANTIAGO GALDAMES HARASIC", "correo": "sjgaldames@miuandes.cl", "coordinador": false}]}, "MACROECONOMIA I": {"DÍAZ CASANUEVA AGUSTÍN": [{"nombre": "ABEL CARVAJAL VERGARA", "correo": "Afcarvajal@miuandes.cl", "coordinador": false}, {"nombre": "VICTORIA RAUSEO GARCÍA", "correo": "vsrauseo@miuandes.cl", "coordinador": false}], "MARIN ALVARO": [{"nombre": "AGUSTÍN CORREA ULRIKSEN", "correo": "acorrea8@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA EMILIA  NEUT  CORREA", "correo": "meneut@miuandes.cl", "coordinador": false}, {"nombre": "MIRANDA  VECCHINI  FRANCO", "correo": "Mvvecchini@miuandes.cl", "coordinador": false}]}, "MACROECONOMIA II": {"LE-FORT CARLOS": [{"nombre": "CARLOS PIRELA HERNÁNDEZ", "correo": "cepirela@miuandes.cl", "coordinador": false}, {"nombre": "MARTÍN GODOY RUBIO", "correo": "mtgodoy@miuandes.cl", "coordinador": false}, {"nombre": "RAIMUNDO ECHEVERRIA LAVIN", "correo": "raecheverria1@miuandes.cl", "coordinador": false}], "CONTRERAS DAMIAN": [{"nombre": "MARÍA AMALIA  ZUÑIGA  MARINOVIC", "correo": "mazuiga@miuandes.cl", "coordinador": false}, {"nombre": "SOFÍA VENEGAS REYES", "correo": "svenegas2@miuandes.cl", "coordinador": false}]}, "MACROECONOMICS I": {"FONCK RICARDO": [{"nombre": "JAIME DE ORBEGOSO GUZMÁN", "correo": "jadeorbegoso@miuandes.cl", "coordinador": false}, {"nombre": "María Emilia Neut", "correo": "meneut@miuandes.cl", "coordinador": false}]}, "MACROECONOMICS II": {"VALDES CRISTIAN GUSTAVO": [{"nombre": "IGNACIO GOLDBERGER DROGUETT", "correo": "ijgoldberger@miuandes.cl", "coordinador": false}, {"nombre": "MARIA BELEN SUAZO MANRIQUEZ", "correo": "mbsuazo@miuandes.cl", "coordinador": false}]}, "MARKETING DIGITAL": {"RIVEROS DAVID NICOLAS": [{"nombre": "NICOLÁS SABELLE RAMÍREZ", "correo": "nicolas.sabelle@gmail.com", "coordinador": false}]}, "MARKETING I": {"LIRA FELIPE TOMAS": [{"nombre": "MARTÍN GODOY RUBIO", "correo": "mtgodoy@miuandes.cl", "coordinador": false}]}, "MARKETING II": {"QUEZADA IGNACIO": [{"nombre": "CATALINA ITURRIAGA POVEDA", "correo": "Csiturriaga@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA JOSÉ VERDUGO CERRO", "correo": "mjverdugo1@miuandes.cl", "coordinador": false}], "CAMUSSETTI DAVID": [{"nombre": "JUAN PABLO  SFEIR MORENO", "correo": "jpsfeir1@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA TRINIDAD DE LA CUESTA ERRANDONEA", "correo": "mtdelacuesta@miuandes.cl", "coordinador": false}]}, "METODOS EMPIRICOS MKTG": {"CAMUSSETTI DAVID": [{"nombre": "ESPERANZA PRENAFETA BERTELSEN", "correo": "eprenafeta@miuandes.cl", "coordinador": false}]}, "MICROECONOMIA I": {"ASPILLAGA BERNARDITA": [{"nombre": "AGUSTÍN LASTRADE HOT", "correo": "ajlastrade@miuandes.cl", "coordinador": false}, {"nombre": "EMILIA WELKNER GAJARDO", "correo": "eawelkner@miuandes.cl", "coordinador": true}, {"nombre": "FRANCISCO INFANTE SERRANO", "correo": "fjinfante@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA EMILIA  NEUT  CORREA", "correo": "meneut@miuandes.cl", "coordinador": false}, {"nombre": "OLIVIA BARCELO ROJAS", "correo": "Omrojas@miuandes.cl", "coordinador": false}]}, "MICROECONOMIA II": {"PIFFAUT PEDRO": [{"nombre": "ANTONIA ABREGO VASQUEZ", "correo": "aabrego@miuandes.cl", "coordinador": false}, {"nombre": "CLEMENTE PRIETO COVARRUBIAS", "correo": "Cprieto2@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA LUISA INFANTE PINILLA", "correo": "Mlinfante@miuandes.cl", "coordinador": false}, {"nombre": "VICTORIA RAUSEO GARCÍA", "correo": "vsrauseo@miuandes.cl", "coordinador": false}], ". DANIEL FEDERICO": [{"nombre": "ISABELA CASTILLO SALAZAR", "correo": "iacastillo2@miuandes.cl", "coordinador": false}]}, "MICROECONOMICS I": {"XIONG WEI": [{"nombre": "ALEXANDER  SCHAUB  VARGAS", "correo": "a.schaub@miuandes.cl", "coordinador": false}]}, "NEGOCIACION": {"IDE ANA": [{"nombre": "Martín Menard Millán", "correo": "mmenard@miuandes.cl", "coordinador": false}]}, "OPTIMIZACION": {"MARTIN CRISTIAN ALEJANDRO": [{"nombre": "NIA PAZ ALVARADO VALENZUELA", "correo": "npalvarado@miuandes.cl", "coordinador": false}, {"nombre": "ABEL CARVAJAL VERGARA", "correo": "Afcarvajal@miuandes.cl", "coordinador": false}, {"nombre": "CATALINA TAGLE DÍAZ", "correo": "cmtagle@miuandes.cl", "coordinador": false}, {"nombre": "FRANCISCA  HERRERA GONZALEZ", "correo": "fcherrera@miuandes.cl", "coordinador": false}, {"nombre": "FRANCISCO ELTIT CORDERO", "correo": "fjeltit@miuandes.cl", "coordinador": false}, {"nombre": "JAVIER RODRIGO MANDUJANO ASTA-BURUAGA", "correo": "JRmandujano@miuandes.cl", "coordinador": false}], "CAYAMA DANIEL": [{"nombre": "DANIELA CASTILLO BONO", "correo": "Dacastillo1@miuandes.cl", "coordinador": false}, {"nombre": "FLORENCIA  BARRÍA  MARDONES", "correo": "fsbarria@miuandes.cl", "coordinador": false}, {"nombre": "JOSEMARÍA  QUIROZ ESPINOZA", "correo": "Jquiroz2@miuandes.cl", "coordinador": false}, {"nombre": "SANTIAGO  VILDÓSOLA  BENAVENTE", "correo": "sjvildosola@miuandes.cl", "coordinador": false}]}, "ORGANIZACION INDUSTRIAL": {"CHILET JORGE ANDRES": [{"nombre": "CLAUDIA CID RODRÍGUEZ", "correo": "cacid4@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA  PUNTI CARTASEGNA", "correo": "mdpunti@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA AMALIA  ZUÑIGA  MARINOVIC", "correo": "mazuiga@miuandes.cl", "coordinador": false}]}, "PENSAMIENTO CRIT.EN ECONOMIA": {"GAMBOA ANGEL": [{"nombre": "MILÉN CONTRERAS  MORALES", "correo": "macontreras4@miuandes.cl", "coordinador": true}]}, "PRACTICA PROFESIONAL": {"MUÑOZ VALENTINA MARIA": [{"nombre": "MARÍA FERNANDA MOZÓ LIRA", "correo": "mfmozo@miuandes.cl", "coordinador": false}, {"nombre": "MARIANA BACCIARINI ÑAHUIS", "correo": "Mjbacciarini@miuandes.cl", "coordinador": false}]}, "PRINCIPLES OF MICROECONOMICS": {"ESCALANTE ISABELA": [{"nombre": "LAURA ANTONIA FABRES VERGARA", "correo": "lafabres@miuandes.cl", "coordinador": false}]}, "PRINCIPLES OF ECONOMICS": {"ZOUBALEVITCH DANIEL ANGEL": [{"nombre": "BELTRAN MENDOZA HIDALGO", "correo": "b.mendoza@miuandes.cl", "coordinador": false}, {"nombre": "FLORENCIA  URETA PULIDO", "correo": "f.ureta@miuandes.cl", "coordinador": false}], "BECK JUAN CRISTOBAL": [{"nombre": "CRISTOBAL MEYER CORONADO", "correo": "cmeyer@miuandes.cl", "coordinador": false}, {"nombre": "VALENTINA  DICKSTEIN  MANDIL", "correo": "vsdickstein@miuandes.cl", "coordinador": false}]}, "PRODUCTIVIDAD E INCENTIVOS": {". JUAN PEDRO": [{"nombre": "MARIANNE VON UNGER DIDIER", "correo": "mvonunger@miuandes.cl", "coordinador": false}]}, "PROYECTO DE MARKETING": {"CAMUSSETTI DAVID": [{"nombre": "ANDRES DEL RÍO GUIMARES", "correo": "ajdelrio@miuandes.cl", "coordinador": false}]}, "REGULACION FINANCIERA Y TOPICOS DE BANCA": {"LE-FORT CARLOS": [{"nombre": "RAIMUNDO ECHEVERRIA LAVIN", "correo": "raecheverria1@miuandes.cl", "coordinador": false}]}, "SUPPLY CHAIN MANAGEMENT": {"MORALES EUGENIO RENE MATEO": [{"nombre": "FRANCISCA ALVAREZ RODRIGUEZ", "correo": "fpalvarez@miuandes.cl", "coordinador": false}, {"nombre": "ELISA SERRA SANTA MARÍA", "correo": "Ejserra@miuandes.cl", "coordinador": false}]}, "TEORIA DE INVERSIONES": {"PEREZ MARIO ALEJANDRO": [{"nombre": "ANTONELLA TOMARELLI CRUZAT", "correo": "astomarelli@miuandes.cl", "coordinador": false}, {"nombre": "MIRANDA  VECCHINI  FRANCO", "correo": "Mvvecchini@miuandes.cl", "coordinador": false}], "PALADINO JUAN MARTIN": [{"nombre": "JAVIER RODRIGO MANDUJANO ASTA-BURUAGA", "correo": "JRmandujano@miuandes.cl", "coordinador": false}, {"nombre": "LUCAS LARTUNDO  LOBOS", "correo": "lilartundo@miuandes.cl", "coordinador": false}]}, "VALORACION DE EMPRESAS Y PROY.": {"REID ANDRE": [{"nombre": "DIEGO DROSTE CHARLÍN", "correo": "ddroste@miuandes.cl", "coordinador": false}, {"nombre": "IGNACIO MUÑOZ GUZMÁN", "correo": "iamuoz4@miuandes.cl", "coordinador": false}, {"nombre": "MIRANDA  VECCHINI  FRANCO", "correo": "Mvvecchini@miuandes.cl", "coordinador": false}]}};
+const PA_URL = "https://defaultb91e1a9b47184623882e6fb655d96b.f0.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6001f308890547c3ba91016527120c1f/triggers/manual/paths/invoke?api-version=1";
+const CURSOS = ["ADMIN DE PROYECTOS SOCIALES", "ADVANCED CORPORATE FINANCE", "ALGEBRA LINEAL", "ANALISIS FINANCIERO", "ANALITICA Y PROY. PARA MACRO.", "APPLIED PORTFOLIO MANAG.", "BUSINESS ENGLISH I", "BUSINESS ENGLISH III", "CALCULO I", "CALCULO II", "COMPETENCIA Y REGUL.DE MER.", "CONTABILIDAD I", "CONTABILIDAD II", "CORPORATE FINANCE", "CREACION DE NUEVOS PROD", "DATA ANALYTICS AVANZADO", "DATA ANALYTICS I", "DATA ANALYTICS II", "DATA ANALYTICS III", "DATA ANALYTICS IV", "DERECHO DE LA EMPRESA", "DESARROLLO ECONOMICO", "DIRECCION DE PERSONAS", "DYNAMIC GLOBAL FORCES", "ECONOMETRIA", "ECONOMIA PARA NO ESPECIALISTAS", "ENTREPRENEURSHIP & INNOVATION", "ESTADISTICAS I", "ESTADISTICAS II", "ESTRATEGIA COMPETITIVA", "ETICA DE LA EMPRESA", "EVALUACION DE PROY", "FINA. PARA NO ESPECIALISTAS I", "FUND. DEL EMPREND. Y LA INNOV.", "GESTION DE OPERACIONES", "GLOBAL BUSINESS ENVIRONMENTS", "IA APLICADA A FINANZAS", "IMPL. Y CONTROL DE GESTION", "INGLES II", "INGLES III", "INGLES IV", "INNOVACION I: DESDE LA IDEA AL", "INNOVACION III: TOPICOS DE INN", "INSERCION LABORAL", "INTRODUCCION A LA ECONOMIA", "INTRODUCCION A LA MICROECONOMIA", "LABORATORIO DE INVERSIONES", "LIDERAZGO Y GESTION DEL CAMBIO", "MACROECONOMIA I", "MACROECONOMIA II", "MACROECONOMICS I", "MACROECONOMICS II", "MARKETING DIGITAL", "MARKETING I", "MARKETING II", "METODOS EMPIRICOS MKTG", "MICROECONOMIA I", "MICROECONOMIA II", "MICROECONOMICS I", "NEGOCIACION", "OPTIMIZACION", "ORGANIZACION INDUSTRIAL", "PENSAMIENTO CRIT.EN ECONOMIA", "PRACTICA PROFESIONAL", "PRINCIPLES OF MICROECONOMICS", "PRINCIPLES OF ECONOMICS", "PRODUCTIVIDAD E INCENTIVOS", "PROYECTO DE MARKETING", "REGULACION FINANCIERA Y TOPICOS DE BANCA", "SUPPLY CHAIN MANAGEMENT", "TEORIA DE INVERSIONES", "VALORACION DE EMPRESAS Y PROY."];
+const DATA = {"ADMIN DE PROYECTOS SOCIALES": {"GONZALEZ XIMENA": [{"nombre": "BARBARA CAMILA ESPINOZA MANRIQUEZ", "correo": "bcespinoza@miuandes.cl", "coordinador": false}, {"nombre": "JAVIERA HASBÚN GIANCÁSPERO", "correo": "jbhasbun@miuandes.cl", "coordinador": false}]}, "ADVANCED CORPORATE FINANCE": {"ERRAZURIZ MAURICIO": [{"nombre": "JOSÉ PEDRO TERRAZAS CORTÉS", "correo": "jpterrazas@miuandes.cl", "coordinador": false}]}, "ALGEBRA LINEAL": {"SALAS SOFIA AGUSTINA": [{"nombre": "FELIPE CORREAL POSADA", "correo": "fcorreal@miuandes.cl", "coordinador": false}, {"nombre": "GUSTAVO  ERRÁZURIZ GARCÍA", "correo": "gerrazuriz@miuandes.cl", "coordinador": false}, {"nombre": "MAGDALENA  CAMPAÑA SEPÚLVEDA", "correo": "macampana@miuandes.cl", "coordinador": true}, {"nombre": "MARÍA JESÚS  VALENZUELA  LARRAÍN", "correo": "mjvalenzuela7@miuandes.cl", "coordinador": false}]}, "ANALISIS FINANCIERO": {"ORTEGA SERGIO": [{"nombre": "CATALINA TAGLE DÍAZ", "correo": "cmtagle@miuandes.cl", "coordinador": false}, {"nombre": "FLORENCIA URMENETA CAMPOS", "correo": "fturmeneta@miuandes.cl", "coordinador": false}], ". VINCENT": [{"nombre": "IGNACIO ALCAYAGA MUÑOZ", "correo": "inalcayaga@miuandes.cl", "coordinador": true}, {"nombre": "JAIME EYZAGUIRRE DÍAZ", "correo": "Jeyzaguirre2@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA AMALIA  ZUÑIGA  MARINOVIC", "correo": "mazuiga@miuandes.cl", "coordinador": false}, {"nombre": "MAXIMO  GORZIGLIA MUZARD", "correo": "mjgorziglia1@miuandes.cl", "coordinador": false}, {"nombre": "OLIVIA BARCELO ROJAS", "correo": "Omrojas@miuandes.cl", "coordinador": false}, {"nombre": "SANTIAGO DECOMBE IZQUIERDO", "correo": "sdecombe@miuandes.cl", "coordinador": false}]}, "ANALITICA Y PROY. PARA MACRO.": {"TAPIA ANDRES": [{"nombre": "SOFÍA VENEGAS REYES", "correo": "svenegas2@miuandes.cl", "coordinador": false}]}, "APPLIED PORTFOLIO MANAG.": {"PEREZ MARIO ALEJANDRO": [{"nombre": "NICOLAS SOTOMAYOR MATTE", "correo": "nsotomayor@miuandes.cl", "coordinador": false}, {"nombre": "MARIA JOSÉ ROMÁN", "correo": "mjroman1@miuandes.cl", "coordinador": false}]}, "BUSINESS ENGLISH I": {"MONTANE MARCELA": [{"nombre": "COLOMBA REINECKE CLARK", "correo": "Cmreinecke@miuandes.cl", "coordinador": false}, {"nombre": "SOFÍA  GUERRERO  LECAROS", "correo": "sbguerrero@miuandes.cl", "coordinador": false}]}, "BUSINESS ENGLISH III": {"MONTANE MARCELA": [{"nombre": "MARGARITA SILVA PEIRANO MARGARITA SILVA PEIRANO", "correo": "mmsilva5@miuandes.cl", "coordinador": false}], "THOMSON SAMUEL .": [{"nombre": "MATHIAS HOPPE OTTEN", "correo": "m.hoppe@miuandes.cl", "coordinador": false}]}, "CALCULO I": {"UNDURRAGA ALEJANDRA": [{"nombre": "AGUSTÍN LASTRADE HOT", "correo": "ajlastrade@miuandes.cl", "coordinador": false}, {"nombre": "EMILIA SOTO GAETE", "correo": "mesoto3@miuandes.cl", "coordinador": false}, {"nombre": "EMILIA ULRIKSEN GARCIA", "correo": "e.ulriksen@miuandes.cl", "coordinador": false}, {"nombre": "JUAN JOSÉ  MORENO  PINTO", "correo": "jjmoreno@miuandes.cl", "coordinador": false}, {"nombre": "MARGARITA LIRA LETELIER", "correo": "Mlira5@miuandes.cl", "coordinador": false}, {"nombre": "MARIA ELISA MOZÓ DOMINGUEZ", "correo": "memozo@miuandes.cl", "coordinador": false}], "NAVARRO MARIO": [{"nombre": "DANIEL  CORREA GHIRARDELLI", "correo": "Djcorrea@miuandes.cl", "coordinador": false}, {"nombre": "JUAN PEDRO RETAMAL FAURE", "correo": "jpretamal@miuandes.cl", "coordinador": false}, {"nombre": "SOFÍA  GUERRERO  LECAROS", "correo": "sbguerrero@miuandes.cl", "coordinador": false}, {"nombre": "TOMAS BENJAMIN CORREA DIAZ", "correo": "tbcorrea@miuandes.cl", "coordinador": false}]}, "CALCULO II": {"UNDURRAGA ALEJANDRA": [{"nombre": "GUILLERMO NIETO GONZALEZ", "correo": "gnieto1@miuandes.cl", "coordinador": false}, {"nombre": "VALENTINA  DICKSTEIN  MANDIL", "correo": "vsdickstein@miuandes.cl", "coordinador": false}], "NAVARRO MARIO": [{"nombre": "VALENTINA ORTIZ  FUENTES", "correo": "Vcortiz@miuandes.cl", "coordinador": false}]}, "COMPETENCIA Y REGUL.DE MER.": {"CARRASCO NICOLAS FELIPE": [{"nombre": "MARIA IGNACIA CALDERON ARANCIBIA", "correo": "micalderon@miuandes.cl", "coordinador": false}]}, "CONTABILIDAD I": {"HEIMLICH ROBERT": [{"nombre": "ALVARO SANTIAGO DAZA RIVERA", "correo": "asdaza@miuandes.cl", "coordinador": false}, {"nombre": "CRISTOBAL MEYER CORONADO", "correo": "cmeyer@miuandes.cl", "coordinador": false}, {"nombre": "DIEGO JOSÉ RIQUELME LANGER", "correo": "djriquelme@miuandes.cl", "coordinador": false}, {"nombre": "JUAN CARLOS PIÑONES CURGUAN", "correo": "jcpinones@miuandes.cl", "coordinador": false}], "TAGLE JOSE": [{"nombre": "ANTONIA  ABREGO  VÁSQUEZ", "correo": "aabrego@miuandes.cl", "coordinador": false}, {"nombre": "MANUEL JOSÉ CORREA OVALLE", "correo": "Mjcorrea8@miuandes.cl", "coordinador": false}], "MORENO RAQUEL DEL CARMEN": [{"nombre": "DOMINGO VALENZUELA SANDOVAL", "correo": "djvalenzuela1@miuandes.cl", "coordinador": false}, {"nombre": "JUAN MEX PEREZ", "correo": "jemex@miuandes.cl", "coordinador": false}, {"nombre": "NICOLÁS MOYA GALLEGUILLOS", "correo": "namoya1@miuandes.cl", "coordinador": false}], "ARAYA HAROLD": [{"nombre": "IGNACIO MUÑOZ GUZMÁN", "correo": "iamuoz4@miuandes.cl", "coordinador": false}, {"nombre": "JUAN PABLO MARTINEZ DEBARBIERI", "correo": "jpmartinez4@miuandes.cl", "coordinador": false}, {"nombre": "MARTINA  VALENZUELA  DELFAU", "correo": "mvalenzuela27@miuandes.cl", "coordinador": false}, {"nombre": "RENATA  GONZALEZ  AVENDAÑO", "correo": "Ragonzalez17@miuandes.cl", "coordinador": false}]}, "CONTABILIDAD II": {"PURCELL NICOLAS": [{"nombre": "CECILIA CORTÉS-MONROY ROMERO", "correo": "cccortesmonroy@miuandes.cl", "coordinador": false}, {"nombre": "DEBORA  MIÑO DÍAZ", "correo": "dimio@miuandes.cl", "coordinador": false}, {"nombre": "JUAN PABLO MARTINEZ DEBARBIERI", "correo": "jpmartinez4@miuandes.cl", "coordinador": false}, {"nombre": "SIMÓN  BARCELÓ  PORTALUPPI", "correo": "sbarcelo@miuandes.cl", "coordinador": false}]}, "CORPORATE FINANCE": {"REID ANDRE": [{"nombre": "DOMINGA  CONCHA VILDÓSOLA", "correo": "dmconcha@miuandes.cl", "coordinador": false}, {"nombre": "ISIDORA PINTO MUÑOZ", "correo": "ippinto@miuandes.cl", "coordinador": false}]}, "CREACION DE NUEVOS PROD": {"NAVARRO TERESA": [{"nombre": "ALEJANDRA  LACÁMARA IRARRÁZAVAL", "correo": "malacamara@miuandes.cl", "coordinador": false}]}, "DATA ANALYTICS AVANZADO": {"REYES MATIAS JOSE": [{"nombre": "JUAN UNDURRAGA ERRAZURIZ", "correo": "Jlundurraga@miuandes.cl", "coordinador": false}, {"nombre": "STEFANNO CASELLA CABRERA", "correo": "Scasella@miuandes.cl", "coordinador": false}]}, "DATA ANALYTICS I": {"MARCHANT ARTURO": [{"nombre": "CECILIA CORTÉS-MONROY ROMERO", "correo": "cccortesmonroy@miuandes.cl", "coordinador": false}, {"nombre": "FRANCISCA  HERRERA GONZALEZ", "correo": "fcherrera@miuandes.cl", "coordinador": false}, {"nombre": "SIMÓN  BARCELÓ  PORTALUPPI", "correo": "sbarcelo@miuandes.cl", "coordinador": false}, {"nombre": "SOFIA ONETO LAGOS", "correo": "soneto@miuandes.cl", "coordinador": false}], "FASCHING DANIEL": [{"nombre": "EMILIA ULRIKSEN GARCIA", "correo": "e.ulriksen@miuandes.cl", "coordinador": false}, {"nombre": "JAIME EYZAGUIRRE DÍAZ", "correo": "Jeyzaguirre2@miuandes.cl", "coordinador": false}], "VALENZUELA JORGE": [{"nombre": "FERNANDA  FREUDE ENSIGNIA", "correo": "fafreude@miuandes.cl", "coordinador": false}, {"nombre": "FRANCISCO ELTIT CORDERO", "correo": "fjeltit@miuandes.cl", "coordinador": false}, {"nombre": "JUAN CARLOS PIÑONES CURGUAN", "correo": "jcpinones@miuandes.cl", "coordinador": false}, {"nombre": "PABLO INFANTE CANALES", "correo": "piinfante@miuandes.cl", "coordinador": false}], "CUEVAS FRANCISCO DE ASIS": [{"nombre": "MARÍA JESÚS  VALENZUELA  LARRAÍN", "correo": "mjvalenzuela7@miuandes.cl", "coordinador": false}, {"nombre": "MATILDE ANTONIA MÉNDEZ PINO", "correo": "mamendez3@miuandes.cl", "coordinador": false}]}, "DATA ANALYTICS II": {"DUENAS NISSIM": [{"nombre": "ABEL CARVAJAL VERGARA", "correo": "Afcarvajal@miuandes.cl", "coordinador": false}, {"nombre": "DOMINGO VALENZUELA SANDOVAL", "correo": "djvalenzuela1@miuandes.cl", "coordinador": false}, {"nombre": "MARIA ELISA MOZÓ DOMINGUEZ", "correo": "memozo@miuandes.cl", "coordinador": false}], "ALBERTO": [{"nombre": "BELTRAN MENDOZA HIDALGO", "correo": "b.mendoza@miuandes.cl", "coordinador": false}, {"nombre": "GUSTAVO  ERRÁZURIZ GARCÍA", "correo": "gerrazuriz@miuandes.cl", "coordinador": false}], "LITVAK SERGIO": [{"nombre": "FELIPE  SOTO MATUS", "correo": "fasoto7@miuandes.cl", "coordinador": false}, {"nombre": "CATALINA TAGLE DÍAZ", "correo": "cmtagle@miuandes.cl", "coordinador": false}, {"nombre": "MATILDE ANTONIA MÉNDEZ PINO", "correo": "mamendez3@miuandes.cl", "coordinador": false}], "LORCA KURT": [{"nombre": "JOSEFA BENCINI VIVAR", "correo": "jbencini@miuandes.cl", "coordinador": true}, {"nombre": "SANTIAGO BUSTOS CORTEZ", "correo": "sbustos2@miuandes.cl", "coordinador": false}, {"nombre": "GABRIEL NEIRA VEGA", "correo": "geneira@miuandes.cl", "coordinador": false}]}, "DATA ANALYTICS III": {"MARCHANT ARTURO": [{"nombre": "DOMINGO VALENZUELA SANDOVAL", "correo": "djvalenzuela1@miuandes.cl", "coordinador": false}, {"nombre": "JOAQUÍN STORMESAN DIAZ", "correo": "jistormesan@miuandes.cl", "coordinador": false}, {"nombre": "JUAN PEDRO RETAMAL FAURE", "correo": "jpretamal@miuandes.cl", "coordinador": false}]}, "DATA ANALYTICS IV": {"DE LA CRUZ ALEXIS MANUEL": [{"nombre": "DEBORA  MIÑO DÍAZ", "correo": "dimio@miuandes.cl", "coordinador": false}, {"nombre": "EMILIA WELKNER GAJARDO", "correo": "eawelkner@miuandes.cl", "coordinador": false}, {"nombre": "SAYEN SOBRAL MORALES", "correo": "ssobral@miuandes.cl", "coordinador": false}]}, "DERECHO DE LA EMPRESA": {"AGUILERA RAIMUNDO": [{"nombre": "ANITA MARIA LYON VIAL", "correo": "amlyon@miuandes.cl", "coordinador": false}, {"nombre": "SIMONETTA PAZ MANCINI RODRIGUEZ", "correo": "Sprodriguez@miuandes.cl", "coordinador": false}], "VILLANUEVA FELIPE": [{"nombre": "STEFANNO CASELLA CABRERA", "correo": "Scasella@miuandes.cl", "coordinador": false}]}, "DESARROLLO ECONOMICO": {"FERNANDEZ MAURICIO ANDRES": [{"nombre": "SOFIA SCHUSTER MIRANDA", "correo": "sschuster@fen.uchile.cl", "coordinador": false}]}, "DIRECCION DE PERSONAS": {"GONZALEZ FELIPE ANDRES": [{"nombre": "FERNANDA  FREUDE ENSIGNIA", "correo": "fafreude@miuandes.cl", "coordinador": false}, {"nombre": "FRANCISCA  HERRERA GONZALEZ", "correo": "fcherrera@miuandes.cl", "coordinador": false}]}, "DYNAMIC GLOBAL FORCES": {"ANDRE": [{"nombre": "BERNARDITA  PAROT NAYLOR", "correo": "b.parot@miuandes.cl", "coordinador": false}, {"nombre": "JAVIERA CRUZ GONZÁLEZ", "correo": "jacruz3@miuandes.cl", "coordinador": false}, {"nombre": "MARIA BELEN SUAZO MANRIQUEZ", "correo": "mbsuazo@miuandes.cl", "coordinador": false}]}, "ECONOMETRIA": {"OSORIO JORGE": [{"nombre": "CARLOS PIRELA HERNÁNDEZ", "correo": "cepirela@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA EMILIA  NEUT  CORREA", "correo": "meneut@miuandes.cl", "coordinador": true}, {"nombre": "MARTIN DI BIASE ORMICK", "correo": "Madibiase@miuandes.cl", "coordinador": false}], "VALDES JOSE MANUEL": [{"nombre": "DOMINGA QUIJADA MORA", "correo": "dquijada@miuandes.cl", "coordinador": false}, {"nombre": "FRANCISCO INFANTE SERRANO", "correo": "fjinfante@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA LUISA INFANTE PINILLA", "correo": "Mlinfante@miuandes.cl", "coordinador": false}]}, "ECONOMIA PARA NO ESPECIALISTAS": {"HERRERA JOSE MIGUEL": [{"nombre": "MARIA ANTONIA ERRAZURIZ GASTELLU", "correo": "merrazuriz2@miuandes.cl", "coordinador": false}]}, "ENTREPRENEURSHIP & INNOVATION": {"FLORES FRANCISCO JAVIER": [{"nombre": "JUAN CARLOS PIÑONES CURGUAN", "correo": "jcpinones@miuandes.cl", "coordinador": false}, {"nombre": "RENATA  GARRIDO REBOLLEDO", "correo": "rpgarrido@miuandes.cl", "coordinador": false}, {"nombre": "RENATA  GONZALEZ  AVENDAÑO", "correo": "Ragonzalez17@miuandes.cl", "coordinador": false}, {"nombre": "ROBERT FABRICIO GARECA PERALTA", "correo": "rfgareca@miuandes.cl", "coordinador": false}]}, "ESTADISTICAS I": {"ESPINOZA JORGE LUIS": [{"nombre": "ALEXANDER  SCHAUB  VARGAS", "correo": "a.schaub@miuandes.cl", "coordinador": false}, {"nombre": "BELTRAN MENDOZA HIDALGO", "correo": "b.mendoza@miuandes.cl", "coordinador": false}, {"nombre": "DANIELA CASTILLO BONO", "correo": "Dacastillo1@miuandes.cl", "coordinador": false}, {"nombre": "FERNANDA VILLALOBOS ARAYA", "correo": "fvillalobos4@miuandes.cl", "coordinador": false}, {"nombre": "MARIA ELISA MOZÓ DOMINGUEZ", "correo": "memozo@miuandes.cl", "coordinador": false}, {"nombre": "SIMÓN  BARCELÓ  PORTALUPPI", "correo": "sbarcelo@miuandes.cl", "coordinador": true}], "MENEGHELLO CECILIA": [{"nombre": "CATALINA TAGLE DÍAZ", "correo": "cmtagle@miuandes.cl", "coordinador": false}, {"nombre": "DOMINGA LIRA VALENZUELA", "correo": "Dlira@miuandes.cl", "coordinador": false}], "GAGGERO JOSEFINA": [{"nombre": "FERNANDA MARCHANT MARAÑON", "correo": "fjmarchant@miuandes.cl", "coordinador": false}, {"nombre": "SOFÍA  POLANCO MEZZANO", "correo": "spolanco@miuandes.cl", "coordinador": false}]}, "ESTADISTICAS II": {"QUEZADA IGNACIO": [{"nombre": "FRESCIA MUÑOZ ALFARO", "correo": "fdmuoz@miuandes.cl", "coordinador": true}, {"nombre": "MIKAELA SMITH BURGOS", "correo": "Masmith@miuandes.cl", "coordinador": false}, {"nombre": "TOMÁS KIMBER DASTRES", "correo": "tikimber@miuandes.cl", "coordinador": false}], "LIZZANO SEBASTIAN ALBERTO": [{"nombre": "ISIDORA  VARGAS  ÁVILA", "correo": "iavargas@miuandes.cl", "coordinador": false}, {"nombre": "JUAN ENRIQUE  SWINBURN  CORREA", "correo": "jeswinburn@miuandes.cl", "coordinador": false}, {"nombre": "MARTINA  CARVALLO RAMÍREZ", "correo": "Mcarvallo2@miuandes.cl", "coordinador": false}]}, "ESTRATEGIA COMPETITIVA": {"PICASSO FRANCISCO JOSE": [{"nombre": "AGUSTÍN CORREA ULRIKSEN", "correo": "acorrea8@miuandes.cl", "coordinador": false}, {"nombre": "CLAUDIA CID RODRÍGUEZ", "correo": "cacid4@miuandes.cl", "coordinador": false}, {"nombre": "JAIME JULIO AGUIRRE  ALAMO", "correo": "jjaguirre@miuandes.cl", "coordinador": false}, {"nombre": "MARIO ZABALA CARVAJAL", "correo": "mjzabala1@miuandes.cl", "coordinador": false}, {"nombre": "PABLO INFANTE CANALES", "correo": "piinfante@miuandes.cl", "coordinador": false}]}, "ETICA DE LA EMPRESA": {"BEROIZA MARIA TRINIDAD": [{"nombre": "NATALIA  RUCAN RUCAN", "correo": "narucan@miuandes.cl", "coordinador": false}, {"nombre": "STEFANNO CASELLA CABRERA", "correo": "Scasella@miuandes.cl", "coordinador": false}], "MAINGUYAGUE JOSE LUIS": [{"nombre": "TOMÁS SAAVEDRA SABAT", "correo": "tisaavedra@miuandes.cl", "coordinador": false}]}, "EVALUACION DE PROY": {". ELISABETH WEST": [{"nombre": "MARIA BELEN SUAZO MANRIQUEZ", "correo": "mbsuazo@miuandes.cl", "coordinador": false}]}, "FINA. PARA NO ESPECIALISTAS I": {"DE LA CRUZ ALEXIS MANUEL": [{"nombre": "CRISTIÁN BARRIENTOS ZILLERUELO", "correo": "cbarrientos1@miuandes.cl", "coordinador": false}, {"nombre": "LUCAS  SEKUL  CABRERA", "correo": "lsekul@miuandes.cl", "coordinador": false}], "IBAÑEZ CRISTIAN .": [{"nombre": "MATEO  LOPEZ SAVI", "correo": "Mlopez22@miuandes.cl", "coordinador": false}, {"nombre": "SAYEN SOBRAL MORALES", "correo": "ssobral@miuandes.cl", "coordinador": false}]}, "FUND. DEL EMPREND. Y LA INNOV.": {"DEL PEDREGAL JUAN PABLO": [{"nombre": "ALINA  COTERILLO RIQUELME", "correo": "acoterillo@miuandes.cl", "coordinador": false}, {"nombre": "MARIA ELISA  CUADRADO  AGUIRRE", "correo": "Mecuadrado1@miuandes.cl", "coordinador": false}], "MERINO CATALINA": [{"nombre": "ANTONIA BECERRA CARRASCO", "correo": "ajbecerra@miuandes.cl", "coordinador": false}, {"nombre": "JAVIER RODRIGO MANDUJANO ASTA-BURUAGA", "correo": "JRmandujano@miuandes.cl", "coordinador": false}], "GELSAM PAULA ANDREA": [{"nombre": "CECILIA CORTÉS-MONROY ROMERO", "correo": "cccortesmonroy@miuandes.cl", "coordinador": false}, {"nombre": "HELENA BARRERA STEINBRECHER", "correo": "hebarrera@miuandes.cl", "coordinador": false}], "ARAVENA ANTONELLA": [{"nombre": "DEBORA  MIÑO DÍAZ", "correo": "dimio@miuandes.cl", "coordinador": false}, {"nombre": "MILÉN CONTRERAS  MORALES", "correo": "macontreras4@miuandes.cl", "coordinador": false}]}, "GESTION DE OPERACIONES": {"GIWERCMAN LEONARDO DAVID": [{"nombre": "DALIDA FAKHREDDINE PARADA", "correo": "dfakhreddine@miuandes.cl", "coordinador": false}, {"nombre": "JUAN UNDURRAGA ERRAZURIZ", "correo": "Jlundurraga@miuandes.cl", "coordinador": false}]}, "GLOBAL BUSINESS ENVIRONMENTS": {". ELISABETH WEST": [{"nombre": "CATALINA ANDREA DELAVEAU EFFA", "correo": "cadelaveau@miuandes.cl", "coordinador": false}, {"nombre": "DANIELA RAMÍREZ CASTRO", "correo": "dvramirez2@miuandes.cl", "coordinador": false}, {"nombre": "ROBERT FABRICIO GARECA PERALTA", "correo": "rfgareca@miuandes.cl", "coordinador": false}, {"nombre": "VALENTINA ORTIZ  FUENTES", "correo": "Vcortiz@miuandes.cl", "coordinador": false}]}, "IA APLICADA A FINANZAS": {"RODRIGUEZ MIGUEL ANDRES": [{"nombre": "SILKE SCHWARTZ BAZÁN", "correo": "Svschwartz@miuandes.cl", "coordinador": false}]}, "IMPL. Y CONTROL DE GESTION": {"ESPINOSA SEBASTIAN": [{"nombre": "ANTONELLA TOMARELLI CRUZAT", "correo": "astomarelli@miuandes.cl", "coordinador": false}], "PEREZ MARIO ALEJANDRO": [{"nombre": "EMILIA ARTEAGA BERTHOLET", "correo": "Earteaga@miuandes.cl", "coordinador": false}, {"nombre": "PASCALE  GRELLET MOYA", "correo": "Psgrellet@miuandes.cl", "coordinador": false}]}, "INGLES II": {"WAHLING PAULINA": [{"nombre": "JUAN JOSÉ  MORENO  PINTO", "correo": "jjmoreno@miuandes.cl", "coordinador": false}, {"nombre": "SAYEN SOBRAL MORALES", "correo": "ssobral@miuandes.cl", "coordinador": false}]}, "INGLES III": {"MONTANE MARCELA": [{"nombre": "MARGARITA SILVA PEIRANO MARGARITA SILVA PEIRANO", "correo": "mmsilva5@miuandes.cl", "coordinador": false}], "OJEDA JANE": [{"nombre": "ALINA  COTERILLO RIQUELME", "correo": "acoterillo@miuandes.cl", "coordinador": false}, {"nombre": "JUAN JOSÉ  MORENO  PINTO", "correo": "jjmoreno@miuandes.cl", "coordinador": false}]}, "INGLES IV": {"STEWART SCOTT WILLIAM": [{"nombre": "IGNACIO ALCAYAGA MUÑOZ", "correo": "inalcayaga@miuandes.cl", "coordinador": false}, {"nombre": "SANTIAGO ANDRES ASTABURUAGA BRISEÑO", "correo": "saastaburuaga@miuandes.cl", "coordinador": false}]}, "INNOVACION I: DESDE LA IDEA AL": {"KHIANEY ANIL": [{"nombre": "Alessandro Figueroa Pozo", "correo": "amfigueroa2@miuandes.cl", "coordinador": false}], "SNEBERGER GUILLERMO": [{"nombre": "MAIRA FIGUEROA URRUTIA", "correo": "mefigueroa@miuandes.cl", "coordinador": false}]}, "INNOVACION III: TOPICOS DE INN": {"MARAMBIO PAULA JACINTA": [{"nombre": "Alessandro Figueroa Pozo", "correo": "amfigueroa2@miuandes.cl", "coordinador": false}], "ESCOBEDO IGNACIO FELIPE": [{"nombre": "MAIRA FIGUEROA URRUTIA", "correo": "mefigueroa@miuandes.cl", "coordinador": false}]}, "INSERCION LABORAL": {"FERRER MATIAS": [{"nombre": "CATALINA CUADRA ROJAS", "correo": "cacuadra@miuandes.cl", "coordinador": false}, {"nombre": "JOSÉ PEDRO TERRAZAS CORTÉS", "correo": "jpterrazas@miuandes.cl", "coordinador": false}, {"nombre": "JOSEFINA NAVARRETE ORTEGA", "correo": "jdnavarrete@miuandes.cl", "coordinador": false}, {"nombre": "PAULA NAVARRO SÁNCHEZ", "correo": "pjnavarro@miuandes.cl", "coordinador": false}, {"nombre": "SANTIAGO  REYES  LARRAÍN", "correo": "sreyes@miuandes.cl", "coordinador": false}]}, "INTRODUCCION A LA ECONOMIA": {"CARRASCO NICOLAS FELIPE": [{"nombre": "TOMÁS SALINAS PALACIOS", "correo": "Tsalinas1@miuandes.cl", "coordinador": false}, {"nombre": "VALENTINA  DICKSTEIN  MANDIL", "correo": "vsdickstein@miuandes.cl", "coordinador": false}, {"nombre": "CARLOS PIRELA HERNÁNDEZ", "correo": "cepirela@miuandes.cl", "coordinador": false}, {"nombre": "IGNACIO ALONSO MARTÍNEZ MORENO", "correo": "iamartinez2@miuandes.cl", "coordinador": false}, {"nombre": "ISABELLA  TORRES  ABECASIS", "correo": "Itorres1@miuandes.cl", "coordinador": false}, {"nombre": "ISIDORA  VARGAS  AVILA", "correo": "iavargas@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA LUISA INFANTE PINILLA", "correo": "Mlinfante@miuandes.cl", "coordinador": false}, {"nombre": "MARTIN  RUIZ INOSTROZA", "correo": "Maruiz4@miuandes.cl", "coordinador": false}, {"nombre": "RAÚL LAGOMARSINO SANDOYA", "correo": "rlagomarsino@miuandes.cl", "coordinador": false}, {"nombre": "SOFÍA  CORTEZ MOSCOSO", "correo": "scortez1@miuandes.cl", "coordinador": false}]}, "INTRODUCCION A LA MICROECONOMIA": {"RAMIREZ VERONICA": [{"nombre": "CARLOS PIRELA HERNÁNDEZ", "correo": "cepirela@miuandes.cl", "coordinador": false}, {"nombre": "FRANCISCO ELTIT CORDERO", "correo": "fjeltit@miuandes.cl", "coordinador": false}, {"nombre": "IGNACIO ALONSO MARTÍNEZ MORENO", "correo": "iamartinez2@miuandes.cl", "coordinador": false}, {"nombre": "ISIDORA  VARGAS  AVILA", "correo": "iavargas@miuandes.cl", "coordinador": false}, {"nombre": "SEBASTIAN IGNACIO CARRASCO DONOSO", "correo": "sicarrasco@miuandes.cl", "coordinador": false}]}, "LABORATORIO DE INVERSIONES": {"PEREZ MARIO ALEJANDRO": [{"nombre": "FRANCESCO SCAGLIOTTI SALEH", "correo": "flscagliotti@miuandes.cl", "coordinador": false}, {"nombre": "FRESCIA MUÑOZ ALFARO", "correo": "fdmuoz@miuandes.cl", "coordinador": false}, {"nombre": "JUAN UNDURRAGA ERRAZURIZ", "correo": "Jlundurraga@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA EMILIA JARA VERDUGO", "correo": "mejara1@miuandes.cl", "coordinador": false}, {"nombre": "MILÉN CONTRERAS  MORALES", "correo": "macontreras4@miuandes.cl", "coordinador": false}, {"nombre": "RAÚL LAGOMARSINO SANDOYA", "correo": "rlagomarsino@miuandes.cl", "coordinador": false}]}, "LIDERAZGO Y GESTION DEL CAMBIO": {"HERNANDEZ LUISA": [{"nombre": "RAIMUNDO  DÍAZ SOLARI", "correo": "rjdiaz2@miuandes.cl", "coordinador": false}], "ROZAS GONZALO FELIPE": [{"nombre": "SANTIAGO GALDAMES HARASIC", "correo": "sjgaldames@miuandes.cl", "coordinador": false}]}, "MACROECONOMIA I": {"DÍAZ CASANUEVA AGUSTÍN": [{"nombre": "ABEL CARVAJAL VERGARA", "correo": "Afcarvajal@miuandes.cl", "coordinador": false}, {"nombre": "VICTORIA RAUSEO GARCÍA", "correo": "vsrauseo@miuandes.cl", "coordinador": false}], "MARIN ALVARO": [{"nombre": "AGUSTÍN CORREA ULRIKSEN", "correo": "acorrea8@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA EMILIA  NEUT  CORREA", "correo": "meneut@miuandes.cl", "coordinador": false}, {"nombre": "MIRANDA  VECCHINI  FRANCO", "correo": "Mvvecchini@miuandes.cl", "coordinador": false}]}, "MACROECONOMIA II": {"LE-FORT CARLOS": [{"nombre": "CARLOS PIRELA HERNÁNDEZ", "correo": "cepirela@miuandes.cl", "coordinador": false}, {"nombre": "MARTÍN GODOY RUBIO", "correo": "mtgodoy@miuandes.cl", "coordinador": false}, {"nombre": "RAIMUNDO ECHEVERRIA LAVIN", "correo": "raecheverria1@miuandes.cl", "coordinador": false}], "CONTRERAS DAMIAN": [{"nombre": "MARÍA AMALIA  ZUÑIGA  MARINOVIC", "correo": "mazuiga@miuandes.cl", "coordinador": false}, {"nombre": "SOFÍA VENEGAS REYES", "correo": "svenegas2@miuandes.cl", "coordinador": false}]}, "MACROECONOMICS I": {"FONCK RICARDO": [{"nombre": "JAIME DE ORBEGOSO GUZMÁN", "correo": "jadeorbegoso@miuandes.cl", "coordinador": false}, {"nombre": "María Emilia Neut", "correo": "meneut@miuandes.cl", "coordinador": false}]}, "MACROECONOMICS II": {"VALDES CRISTIAN GUSTAVO": [{"nombre": "IGNACIO GOLDBERGER DROGUETT", "correo": "ijgoldberger@miuandes.cl", "coordinador": false}, {"nombre": "MARIA BELEN SUAZO MANRIQUEZ", "correo": "mbsuazo@miuandes.cl", "coordinador": false}]}, "MARKETING DIGITAL": {"RIVEROS DAVID NICOLAS": [{"nombre": "NICOLÁS SABELLE RAMÍREZ", "correo": "nicolas.sabelle@gmail.com", "coordinador": false}]}, "MARKETING I": {"LIRA FELIPE TOMAS": [{"nombre": "MARTÍN GODOY RUBIO", "correo": "mtgodoy@miuandes.cl", "coordinador": false}]}, "MARKETING II": {"QUEZADA IGNACIO": [{"nombre": "CATALINA ITURRIAGA POVEDA", "correo": "Csiturriaga@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA JOSÉ VERDUGO CERRO", "correo": "mjverdugo1@miuandes.cl", "coordinador": false}], "CAMUSSETTI DAVID": [{"nombre": "JUAN PABLO  SFEIR MORENO", "correo": "jpsfeir1@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA TRINIDAD DE LA CUESTA ERRANDONEA", "correo": "mtdelacuesta@miuandes.cl", "coordinador": false}]}, "METODOS EMPIRICOS MKTG": {"CAMUSSETTI DAVID": [{"nombre": "ESPERANZA PRENAFETA BERTELSEN", "correo": "eprenafeta@miuandes.cl", "coordinador": false}]}, "MICROECONOMIA I": {"ASPILLAGA BERNARDITA": [{"nombre": "AGUSTÍN LASTRADE HOT", "correo": "ajlastrade@miuandes.cl", "coordinador": false}, {"nombre": "EMILIA WELKNER GAJARDO", "correo": "eawelkner@miuandes.cl", "coordinador": true}, {"nombre": "FRANCISCO INFANTE SERRANO", "correo": "fjinfante@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA EMILIA  NEUT  CORREA", "correo": "meneut@miuandes.cl", "coordinador": false}, {"nombre": "OLIVIA BARCELO ROJAS", "correo": "Omrojas@miuandes.cl", "coordinador": false}]}, "MICROECONOMIA II": {"PIFFAUT PEDRO": [{"nombre": "ANTONIA ABREGO VASQUEZ", "correo": "aabrego@miuandes.cl", "coordinador": false}, {"nombre": "CLEMENTE PRIETO COVARRUBIAS", "correo": "Cprieto2@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA LUISA INFANTE PINILLA", "correo": "Mlinfante@miuandes.cl", "coordinador": false}, {"nombre": "VICTORIA RAUSEO GARCÍA", "correo": "vsrauseo@miuandes.cl", "coordinador": false}], ". DANIEL FEDERICO": [{"nombre": "ISABELA CASTILLO SALAZAR", "correo": "iacastillo2@miuandes.cl", "coordinador": false}]}, "MICROECONOMICS I": {"XIONG WEI": [{"nombre": "ALEXANDER  SCHAUB  VARGAS", "correo": "a.schaub@miuandes.cl", "coordinador": false}]}, "NEGOCIACION": {"IDE ANA": [{"nombre": "Martín Menard Millán", "correo": "mmenard@miuandes.cl", "coordinador": false}]}, "OPTIMIZACION": {"MARTIN CRISTIAN ALEJANDRO": [{"nombre": "NIA PAZ ALVARADO VALENZUELA", "correo": "npalvarado@miuandes.cl", "coordinador": false}, {"nombre": "ABEL CARVAJAL VERGARA", "correo": "Afcarvajal@miuandes.cl", "coordinador": false}, {"nombre": "CATALINA TAGLE DÍAZ", "correo": "cmtagle@miuandes.cl", "coordinador": false}, {"nombre": "FRANCISCA  HERRERA GONZALEZ", "correo": "fcherrera@miuandes.cl", "coordinador": false}, {"nombre": "FRANCISCO ELTIT CORDERO", "correo": "fjeltit@miuandes.cl", "coordinador": false}, {"nombre": "JAVIER RODRIGO MANDUJANO ASTA-BURUAGA", "correo": "JRmandujano@miuandes.cl", "coordinador": false}], "CAYAMA DANIEL": [{"nombre": "DANIELA CASTILLO BONO", "correo": "Dacastillo1@miuandes.cl", "coordinador": false}, {"nombre": "FLORENCIA  BARRÍA  MARDONES", "correo": "fsbarria@miuandes.cl", "coordinador": false}, {"nombre": "JOSEMARÍA  QUIROZ ESPINOZA", "correo": "Jquiroz2@miuandes.cl", "coordinador": false}, {"nombre": "SANTIAGO  VILDÓSOLA  BENAVENTE", "correo": "sjvildosola@miuandes.cl", "coordinador": false}]}, "ORGANIZACION INDUSTRIAL": {"CHILET JORGE ANDRES": [{"nombre": "CLAUDIA CID RODRÍGUEZ", "correo": "cacid4@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA  PUNTI CARTASEGNA", "correo": "mdpunti@miuandes.cl", "coordinador": false}, {"nombre": "MARÍA AMALIA  ZUÑIGA  MARINOVIC", "correo": "mazuiga@miuandes.cl", "coordinador": false}]}, "PENSAMIENTO CRIT.EN ECONOMIA": {"GAMBOA ANGEL": [{"nombre": "MILÉN CONTRERAS  MORALES", "correo": "macontreras4@miuandes.cl", "coordinador": true}]}, "PRACTICA PROFESIONAL": {"MUÑOZ VALENTINA MARIA": [{"nombre": "MARÍA FERNANDA MOZÓ LIRA", "correo": "mfmozo@miuandes.cl", "coordinador": false}, {"nombre": "MARIANA BACCIARINI ÑAHUIS", "correo": "Mjbacciarini@miuandes.cl", "coordinador": false}]}, "PRINCIPLES OF MICROECONOMICS": {"ESCALANTE ISABELA": [{"nombre": "LAURA ANTONIA FABRES VERGARA", "correo": "lafabres@miuandes.cl", "coordinador": false}]}, "PRINCIPLES OF ECONOMICS": {"ZOUBALEVITCH DANIEL ANGEL": [{"nombre": "BELTRAN MENDOZA HIDALGO", "correo": "b.mendoza@miuandes.cl", "coordinador": false}, {"nombre": "FLORENCIA  URETA PULIDO", "correo": "f.ureta@miuandes.cl", "coordinador": false}], "BECK JUAN CRISTOBAL": [{"nombre": "CRISTOBAL MEYER CORONADO", "correo": "cmeyer@miuandes.cl", "coordinador": false}, {"nombre": "VALENTINA  DICKSTEIN  MANDIL", "correo": "vsdickstein@miuandes.cl", "coordinador": false}]}, "PRODUCTIVIDAD E INCENTIVOS": {". JUAN PEDRO": [{"nombre": "MARIANNE VON UNGER DIDIER", "correo": "mvonunger@miuandes.cl", "coordinador": false}]}, "PROYECTO DE MARKETING": {"CAMUSSETTI DAVID": [{"nombre": "ANDRES DEL RÍO GUIMARES", "correo": "ajdelrio@miuandes.cl", "coordinador": false}]}, "REGULACION FINANCIERA Y TOPICOS DE BANCA": {"LE-FORT CARLOS": [{"nombre": "RAIMUNDO ECHEVERRIA LAVIN", "correo": "raecheverria1@miuandes.cl", "coordinador": false}]}, "SUPPLY CHAIN MANAGEMENT": {"MORALES EUGENIO RENE MATEO": [{"nombre": "FRANCISCA ALVAREZ RODRIGUEZ", "correo": "fpalvarez@miuandes.cl", "coordinador": false}, {"nombre": "ELISA SERRA SANTA MARÍA", "correo": "Ejserra@miuandes.cl", "coordinador": false}, {"nombre": "FRANCISCA ALVAREZ RODRIGUEZ", "correo": "fpalvarez@miuandes.cl", "coordinador": false}, {"nombre": "ELISA SERRA SANTA MARÍA", "correo": "Ejserra@miuandes.cl", "coordinador": false}]}, "TEORIA DE INVERSIONES": {"PEREZ MARIO ALEJANDRO": [{"nombre": "ANTONELLA TOMARELLI CRUZAT", "correo": "astomarelli@miuandes.cl", "coordinador": false}, {"nombre": "MIRANDA  VECCHINI  FRANCO", "correo": "Mvvecchini@miuandes.cl", "coordinador": false}], "PALADINO JUAN MARTIN": [{"nombre": "JAVIER RODRIGO MANDUJANO ASTA-BURUAGA", "correo": "JRmandujano@miuandes.cl", "coordinador": false}, {"nombre": "LUCAS LARTUNDO  LOBOS", "correo": "lilartundo@miuandes.cl", "coordinador": false}]}, "VALORACION DE EMPRESAS Y PROY.": {"REID ANDRE": [{"nombre": "DIEGO DROSTE CHARLÍN", "correo": "ddroste@miuandes.cl", "coordinador": false}, {"nombre": "IGNACIO MUÑOZ GUZMÁN", "correo": "iamuoz4@miuandes.cl", "coordinador": false}, {"nombre": "MIRANDA  VECCHINI  FRANCO", "correo": "Mvvecchini@miuandes.cl", "coordinador": false}]}};
 
-let respuestas = {}; // {nombre: 'si'|'no'}
-let currentAyudantes = [];
-let currentCurso = '';
-let currentProf = '';
-let impresion = null; // 'si' | 'no' | null
-let sessionLog = []; // all confirmed records this session
-let otrosCount = 0; // counter for unique IDs
-
-// Populate cursos
-let selCurso;
-window.addEventListener('DOMContentLoaded', function() {
-  selCurso = document.getElementById('sel-curso');
-  Object.keys(DATA).forEach(c => {
-    const o = document.createElement('option');
-    o.value = c; o.textContent = c;
-    selCurso.appendChild(o);
-  });
-});
+let respuestas = {}, currentAyudantes = [], currentCurso = '', currentProf = '', impresion = null, sessionLog = [], otrosCount = 0;
 
 function onCursoChange() {
-  const sc = document.getElementById('sel-curso');
-  const curso = sc.value;
+  const idx = document.getElementById('sel-curso').value;
   const selProf = document.getElementById('sel-prof');
   selProf.innerHTML = '<option value="">— Seleccione un profesor —</option>';
-  document.getElementById('ayudantes-card').style.display = 'none';
+  selProf.disabled = true;
   document.getElementById('impresion-card').style.display = 'none';
+  document.getElementById('ayudantes-card').style.display = 'none';
   respuestas = {};
-
-  if (!curso) { selProf.disabled = true; return; }
-
-  const profs = Object.keys(DATA[curso]);
-  profs.forEach(p => {
-    const o = document.createElement('option');
+  setStep(1);
+  if (idx === '') return;
+  currentCurso = CURSOS[parseInt(idx)];
+  Object.keys(DATA[currentCurso]).forEach(function(p) {
+    var o = document.createElement('option');
     o.value = p; o.textContent = p;
     selProf.appendChild(o);
   });
   selProf.disabled = false;
-
-  if (profs.length === 1) {
-    selProf.value = profs[0];
-    onProfChange();
-  }
-  setStep(1);
 }
 
 function onProfChange() {
-  const curso = document.getElementById('sel-curso').value;
   const prof = document.getElementById('sel-prof').value;
-  if (!curso || !prof) return;
-
-  currentCurso = curso;
+  if (!currentCurso || !prof) return;
   currentProf = prof;
-  currentAyudantes = DATA[curso][prof];
-  respuestas = {};
-  impresion = null;
-  otrosCount = 0;
+  currentAyudantes = DATA[currentCurso][prof];
+  respuestas = {}; impresion = null; otrosCount = 0;
   document.getElementById('otros-list').innerHTML = '';
   document.getElementById('imp-si').classList.remove('active');
   document.getElementById('imp-no').classList.remove('active');
   document.getElementById('btn-siguiente').disabled = true;
   document.getElementById('ayudantes-card').style.display = 'none';
-
   renderAyudantes();
   document.getElementById('impresion-card').style.display = 'block';
   setStep(2);
-  document.getElementById('impresion-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('impresion-card').scrollIntoView({behavior:'smooth',block:'start'});
 }
-
-function renderAyudantes() {
-  const list = document.getElementById('ayudantes-list');
-  list.innerHTML = '';
-  currentAyudantes.forEach(a => {
-    const row = document.createElement('div');
-    row.className = 'ayudante-row';
-    row.id = 'row-' + encodeId(a.nombre);
-    row.innerHTML = `
-      <div class="ayudante-info">
-        <div class="ayudante-nombre">${a.nombre}${a.coordinador ? '<span class="coord-badge">Coord.</span>' : ''}</div>
-        <div class="ayudante-email">${a.correo}</div>
-      </div>
-      <div class="toggle-group">
-        <button class="toggle-btn si" id="btn-si-${encodeId(a.nombre)}" onclick="marcar('${escapeName(a.nombre)}','si')">✔ Sí</button>
-        <button class="toggle-btn no" id="btn-no-${encodeId(a.nombre)}" onclick="marcar('${escapeName(a.nombre)}','no')">✘ No</button>
-      </div>`;
-    list.appendChild(row);
-  });
-  updateProgress();
-}
-
-function updateSessionBar() {
-  const cursos = new Set(sessionLog.map(r => r.curso + '|' + r.profesor)).size;
-  document.getElementById('session-count').textContent = cursos;
-  document.getElementById('session-hint').textContent =
-    cursos > 0 ? `(${sessionLog.length} ayudantes en ${cursos} curso${cursos > 1 ? 's' : ''})` : 'completa al menos uno para descargar Excel';
-}
-
-function descargarExcel() {
-  if (!sessionLog.length) return;
-
-  const headers = ['Curso','Profesor','Ayudante','Correo','Coordinador','Cuida Prueba','Impresión Facultad','Tipo'];
-  const escape = v => '"' + String(v).replace(/"/g, '""') + '"';
-  const rows = [headers, ...sessionLog.map(r => [
-    r.curso, r.profesor, r.ayudante, r.correo,
-    r.coordinador, r.cuida_prueba, r.impresion_facultad, r.tipo
-  ])];
-
-  const csv = '\uFEFF' + rows.map(r => r.map(escape).join(',')).join('\r\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  const fecha = new Date().toISOString().slice(0,10);
-  a.href = url;
-  a.download = `vigilancia_pruebas_202610_${fecha}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function agregarOtro() {
-  otrosCount++;
-  const id = 'otro-' + otrosCount;
-  const row = document.createElement('div');
-  row.className = 'otro-row';
-  row.id = id;
-  row.innerHTML = `
-    <input class="otro-input" type="text" placeholder="Nombre completo" id="input-${id}" />
-    <button class="otro-remove" onclick="eliminarOtro('${id}')" title="Eliminar">✕</button>`;
-  document.getElementById('otros-list').appendChild(row);
-}
-
-function eliminarOtro(id) {
-  const el = document.getElementById(id);
-  if (el) el.remove();
-}
-
-function getOtros() {
-  return Array.from(document.querySelectorAll('#otros-list .otro-input'))
-    .map(i => i.value.trim())
-    .filter(v => v.length > 0);
-}
-
-function escapeName(n) { return n.replace(/'/g, "\\'"); }
 
 function marcarImpresion(val) {
   impresion = val;
@@ -747,7 +306,27 @@ function marcarImpresion(val) {
 function mostrarAyudantes() {
   document.getElementById('ayudantes-card').style.display = 'block';
   setStep(3);
-  document.getElementById('ayudantes-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('ayudantes-card').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function renderAyudantes() {
+  const list = document.getElementById('ayudantes-list');
+  list.innerHTML = '';
+  currentAyudantes.forEach(function(a) {
+    const id = encodeId(a.nombre);
+    const row = document.createElement('div');
+    row.className = 'ayudante-row';
+    row.id = 'row-' + id;
+    const nombre = a.nombre.replace(/</g,'&lt;');
+    row.innerHTML = '<div class="ayudante-info"><div class="ayudante-nombre">' + nombre + (a.coordinador ? '<span class="coord-badge">Coord.</span>' : '') + '</div><div class="ayudante-email">' + a.correo + '</div></div>' +
+      '<div class="toggle-group">' +
+      '<button class="toggle-btn si" id="btn-si-' + id + '">✔ Sí</button>' +
+      '<button class="toggle-btn no" id="btn-no-' + id + '">✘ No</button></div>';
+    row.querySelector('.toggle-btn.si').addEventListener('click', function() { marcar(a.nombre, 'si'); });
+    row.querySelector('.toggle-btn.no').addEventListener('click', function() { marcar(a.nombre, 'no'); });
+    list.appendChild(row);
+  });
+  updateProgress();
 }
 
 function encodeId(n) { return btoa(unescape(encodeURIComponent(n))).replace(/[^a-zA-Z0-9]/g,''); }
@@ -755,8 +334,7 @@ function encodeId(n) { return btoa(unescape(encodeURIComponent(n))).replace(/[^a
 function marcar(nombre, val) {
   respuestas[nombre] = val;
   const id = encodeId(nombre);
-  const row = document.getElementById('row-' + id);
-  row.className = 'ayudante-row answered-' + val;
+  document.getElementById('row-' + id).className = 'ayudante-row answered-' + val;
   document.getElementById('btn-si-' + id).classList.toggle('active', val === 'si');
   document.getElementById('btn-no-' + id).classList.toggle('active', val === 'no');
   updateProgress();
@@ -766,149 +344,105 @@ function updateProgress() {
   const total = currentAyudantes.length;
   const done = Object.keys(respuestas).length;
   const pct = total ? Math.round(done / total * 100) : 0;
-  document.getElementById('prog-text').textContent = `${done} de ${total} respondidos`;
+  document.getElementById('prog-text').textContent = done + ' de ' + total + ' respondidos';
   document.getElementById('prog-pct').textContent = pct + '%';
   document.getElementById('prog-fill').style.width = pct + '%';
-  document.getElementById('btn-confirmar').disabled = (done < total);
+  document.getElementById('btn-confirmar').disabled = done < total;
+}
+
+function agregarOtro() {
+  otrosCount++;
+  const id = 'otro-' + otrosCount;
+  const row = document.createElement('div');
+  row.className = 'otro-row'; row.id = id;
+  const input = document.createElement('input');
+  input.className = 'otro-input'; input.type = 'text'; input.placeholder = 'Nombre completo';
+  const btn = document.createElement('button');
+  btn.className = 'otro-remove'; btn.textContent = '\u2715';
+  btn.addEventListener('click', function() { row.remove(); });
+  row.appendChild(input); row.appendChild(btn);
+  document.getElementById('otros-list').appendChild(row);
+}
+
+function getOtros() {
+  return Array.from(document.querySelectorAll('#otros-list .otro-input')).map(function(i){ return i.value.trim(); }).filter(function(v){ return v.length > 0; });
 }
 
 async function confirmar() {
-  const siList = currentAyudantes.filter(a => respuestas[a.nombre] === 'si');
-  const noList = currentAyudantes.filter(a => respuestas[a.nombre] === 'no');
+  const siList = currentAyudantes.filter(function(a){ return respuestas[a.nombre]==='si'; });
+  const noList = currentAyudantes.filter(function(a){ return respuestas[a.nombre]==='no'; });
   const otros = getOtros();
   const fecha = new Date().toLocaleDateString('es-CL');
-
-  // Build rows to send
   const filas = [];
-  currentAyudantes.forEach(a => {
-    filas.push({
-      curso: currentCurso,
-      profesor: currentProf,
-      ayudante: a.nombre,
-      correo: a.correo,
-      coordinador: a.coordinador ? 'Sí' : 'No',
-      cuida_prueba: respuestas[a.nombre] === 'si' ? 'Sí' : 'No',
-      impresion_facultad: impresion === 'si' ? 'Sí' : 'No',
-      tipo: 'Ayudante',
-      fecha
-    });
+  currentAyudantes.forEach(function(a){
+    filas.push({curso:currentCurso,profesor:currentProf,ayudante:a.nombre,correo:a.correo,coordinador:a.coordinador?'Sí':'No',cuida_prueba:respuestas[a.nombre]==='si'?'Sí':'No',impresion_facultad:impresion==='si'?'Sí':'No',tipo:'Ayudante',fecha:fecha});
   });
-  otros.forEach(nombre => {
-    filas.push({
-      curso: currentCurso,
-      profesor: currentProf,
-      ayudante: nombre,
-      correo: '',
-      coordinador: 'No',
-      cuida_prueba: 'Sí',
-      impresion_facultad: impresion === 'si' ? 'Sí' : 'No',
-      tipo: 'Otro',
-      fecha
-    });
-  });
-
-  // Show loading
-  const btnConfirmar = document.getElementById('btn-confirmar');
-  btnConfirmar.disabled = true;
-  btnConfirmar.textContent = 'Enviando...';
-
-  // Send each row to Power Automate
-  let errores = 0;
-  for (const fila of filas) {
-    try {
-      await fetch(POWER_AUTOMATE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fila)
-      });
-    } catch (e) {
-      errores++;
-    }
+  otros.forEach(function(n){ filas.push({curso:currentCurso,profesor:currentProf,ayudante:n,correo:'',coordinador:'No',cuida_prueba:'Sí',impresion_facultad:impresion==='si'?'Sí':'No',tipo:'Otro',fecha:fecha}); });
+  const btn = document.getElementById('btn-confirmar');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  for (var i=0; i<filas.length; i++) {
+    try { await fetch(PA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(filas[i])}); } catch(e) {}
   }
-
-  // Also save to session log
-  filas.forEach(f => sessionLog.push(f));
+  filas.forEach(function(f){ sessionLog.push(f); });
   updateSessionBar();
-
-  btnConfirmar.textContent = 'Enviar →';
-  btnConfirmar.disabled = false;
-
-  if (errores > 0) {
-    alert('Algunos datos no pudieron enviarse. Igual puedes descargar el Excel.');
-  }
-
-  document.getElementById('sum-meta-header').textContent = `${currentCurso} · Prof. ${currentProf}`;
-  document.getElementById('sum-meta').innerHTML =
-    `Curso: <span>${currentCurso}</span> &nbsp;·&nbsp; Profesor: <span>${currentProf}</span> &nbsp;·&nbsp; Total ayudantes: <span>${currentAyudantes.length}</span>`;
-
-  document.getElementById('sum-impresion').innerHTML = impresion === 'si'
-    ? '<span class="summary-pill imp-si">🖨️ Sí requiere impresión por la Facultad</span>'
-    : '<span class="summary-pill imp-no">✗ No requiere impresión por la Facultad</span>';
-
-  const sumSi = document.getElementById('sum-si');
-  const sumNo = document.getElementById('sum-no');
-
-  sumSi.innerHTML = siList.length
-    ? siList.map(a => `<span class="summary-pill si">✔ ${a.nombre}</span>`).join('')
-    : '<div class="empty">Ninguno cuidará la prueba</div>';
-
-  sumNo.innerHTML = noList.length
-    ? noList.map(a => `<span class="summary-pill no">✘ ${a.nombre}</span>`).join('')
-    : '<div class="empty">Ninguno marcado como no disponible</div>';
-
-  const otros = getOtros();
-  const sumOtros = document.getElementById('sum-otros');
-  const sumOtrosTitle = document.getElementById('sum-otros-title');
-  if (otros.length) {
-    sumOtrosTitle.style.display = 'flex';
-    sumOtros.innerHTML = otros.map(n => `<span class="summary-pill otro">👤 ${n}</span>`).join('');
-  } else {
-    sumOtrosTitle.style.display = 'none';
-    sumOtros.innerHTML = '';
-  }
-
-  document.getElementById('form-section').style.display = 'none';
+  btn.textContent = 'Enviar →'; btn.disabled = false;
+  document.getElementById('sum-meta-header').textContent = currentCurso + ' · Prof. ' + currentProf;
+  document.getElementById('sum-meta').innerHTML = 'Curso: <span>' + currentCurso + '</span> &nbsp;·&nbsp; Profesor: <span>' + currentProf + '</span>';
+  document.getElementById('sum-impresion').innerHTML = impresion==='si' ? '<span class="summary-pill imp-si">🖨️ Sí requiere impresión</span>' : '<span class="summary-pill imp-no">✗ No requiere impresión</span>';
+  document.getElementById('sum-si').innerHTML = siList.length ? siList.map(function(a){ return '<span class="summary-pill si">✔ '+a.nombre+'</span>'; }).join('') : '<div class="empty">Ninguno</div>';
+  document.getElementById('sum-no').innerHTML = noList.length ? noList.map(function(a){ return '<span class="summary-pill no">✘ '+a.nombre+'</span>'; }).join('') : '<div class="empty">Ninguno</div>';
+  var sumOtros = document.getElementById('sum-otros');
+  var sumOtrosTitle = document.getElementById('sum-otros-title');
+  if (otros.length) { sumOtrosTitle.style.display='flex'; sumOtros.innerHTML=otros.map(function(n){ return '<span class="summary-pill otro">👤 '+n+'</span>'; }).join(''); }
+  else { sumOtrosTitle.style.display='none'; sumOtros.innerHTML=''; }
+  document.getElementById('form-section').style.display='none';
   document.getElementById('summary').classList.add('visible');
   setStep(4);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function reiniciar() {
   document.getElementById('summary').classList.remove('visible');
-  document.getElementById('form-section').style.display = 'block';
+  document.getElementById('form-section').style.display='block';
   setStep(3);
-  document.getElementById('ayudantes-card').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('ayudantes-card').scrollIntoView({behavior:'smooth'});
+}
+
+function updateSessionBar() {
+  const cursos = new Set(sessionLog.map(function(r){ return r.curso+'|'+r.profesor; })).size;
+  document.getElementById('session-count').textContent = cursos;
+  document.getElementById('session-hint').textContent = cursos > 0 ? '('+sessionLog.length+' ayudantes en '+cursos+' curso'+(cursos>1?'s':'')+')' : 'completa al menos uno para descargar Excel';
+}
+
+function descargarExcel() {
+  if (!sessionLog.length) return;
+  const headers = ['Curso','Profesor','Ayudante','Correo','Coordinador','Cuida Prueba','Impresión Facultad','Tipo','Fecha'];
+  const rows = sessionLog.map(function(r){ return [r.curso,r.profesor,r.ayudante,r.correo,r.coordinador,r.cuida_prueba,r.impresion_facultad,r.tipo,r.fecha]; });
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([headers].concat(rows));
+  ws['!cols'] = [{wch:32},{wch:22},{wch:32},{wch:28},{wch:12},{wch:14},{wch:20},{wch:12},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Pruebas 202610');
+  XLSX.writeFile(wb, 'vigilancia_pruebas_202610_'+new Date().toISOString().slice(0,10)+'.xlsx');
 }
 
 function exportarTexto() {
-  const siList = currentAyudantes.filter(a => respuestas[a.nombre] === 'si').map(a => a.nombre);
-  const noList = currentAyudantes.filter(a => respuestas[a.nombre] === 'no').map(a => a.nombre);
-  const otrosList = getOtros();
-  const texto = `SEMANA DE PRUEBAS – VIGILANCIA AYUDANTES 202610
-Curso: ${currentCurso}
-Profesor: ${currentProf}
-Impresión por Facultad: ${impresion === 'si' ? 'SÍ' : 'NO'}
-
-✔ CUIDA LA PRUEBA (${siList.length + otrosList.length}):
-${siList.map(n => '  - ' + n).join('\n') || ''}${otrosList.length ? '\n' + otrosList.map(n => '  - ' + n + ' (otro)').join('\n') : ''}${!siList.length && !otrosList.length ? '  (ninguno)' : ''}
-
-✘ NO CUIDA LA PRUEBA (${noList.length}):
-${noList.map(n => '  - ' + n).join('\n') || '  (ninguno)'}`;
-
-  navigator.clipboard.writeText(texto).then(() => {
-    const btn = document.querySelector('.btn-export');
-    btn.textContent = '✓ ¡Copiado!';
-    setTimeout(() => btn.innerHTML = '📋 Copiar resumen', 2000);
-  }).catch(() => alert(texto));
+  const siList = currentAyudantes.filter(function(a){ return respuestas[a.nombre]==='si'; }).map(function(a){ return a.nombre; });
+  const noList = currentAyudantes.filter(function(a){ return respuestas[a.nombre]==='no'; }).map(function(a){ return a.nombre; });
+  const otros = getOtros();
+  const cuidan = siList.concat(otros.map(function(n){ return n+' (otro)'; })).map(function(n){ return '  - '+n; }).join('\n');
+  const nocuidan = noList.map(function(n){ return '  - '+n; }).join('\n');
+  const texto = 'SEMANA DE PRUEBAS 202610\nCurso: '+currentCurso+'\nProfesor: '+currentProf+'\nImpresion: '+(impresion==='si'?'SI':'NO')+'\n\nCUIDA LA PRUEBA:\n'+cuidan+'\n\nNO CUIDA:\n'+nocuidan;
+  navigator.clipboard.writeText(texto).then(function(){
+    var btn=document.querySelector('.btn-export'); btn.textContent='✓ ¡Copiado!';
+    setTimeout(function(){ btn.innerHTML='📋 Copiar resumen'; },2000);
+  }).catch(function(){ alert(texto); });
 }
 
 function setStep(n) {
-  [1,2,3,4].forEach(i => {
-    const el = document.getElementById('step' + i);
-    if (!el) return;
-    el.classList.remove('active', 'done');
-    if (i < n) el.classList.add('done');
-    else if (i === n) el.classList.add('active');
+  [1,2,3,4].forEach(function(i){
+    var el=document.getElementById('step'+i); if(!el) return;
+    el.classList.remove('active','done');
+    if(i<n) el.classList.add('done'); else if(i===n) el.classList.add('active');
   });
 }
 </script>
