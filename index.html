@@ -368,37 +368,108 @@ function getOtros() {
   return Array.from(document.querySelectorAll('#otros-list .otro-input')).map(function(i){ return i.value.trim(); }).filter(function(v){ return v.length > 0; });
 }
  
+
 async function confirmar() {
-  const siList = currentAyudantes.filter(function(a){ return respuestas[a.nombre]==='si'; });
-  const noList = currentAyudantes.filter(function(a){ return respuestas[a.nombre]==='no'; });
+  const siList = currentAyudantes.filter(function(a){ 
+    return respuestas[a.nombre] === 'si'; 
+  });
+
+  const noList = currentAyudantes.filter(function(a){ 
+    return respuestas[a.nombre] === 'no'; 
+  });
+
   const otros = getOtros();
   const fecha = new Date().toLocaleDateString('es-CL');
   const filas = [];
+
   currentAyudantes.forEach(function(a){
-    filas.push({curso:currentCurso,profesor:currentProf,ayudante:a.nombre,correo:a.correo,coordinador:a.coordinador?'Sí':'No',cuida_prueba:respuestas[a.nombre]==='si'?'Sí':'No',impresion_facultad:impresion==='si'?'Sí':'No',tipo:'Ayudante',fecha:fecha});
+    filas.push({
+      curso: currentCurso,
+      profesor: currentProf,
+      ayudante: a.nombre,
+      correo: a.correo,
+      coordinador: a.coordinador ? 'Sí' : 'No',
+      cuida_prueba: respuestas[a.nombre] === 'si' ? 'Sí' : 'No',
+      impresion_facultad: impresion === 'si' ? 'Sí' : 'No',
+      tipo: 'Ayudante',
+      fecha: fecha
+    });
   });
-  otros.forEach(function(n){ filas.push({curso:currentCurso,profesor:currentProf,ayudante:n,correo:'',coordinador:'No',cuida_prueba:'Sí',impresion_facultad:impresion==='si'?'Sí':'No',tipo:'Otro',fecha:fecha}); });
+
+  otros.forEach(function(n){
+    filas.push({
+      curso: currentCurso,
+      profesor: currentProf,
+      ayudante: n,
+      correo: '',
+      coordinador: 'No',
+      cuida_prueba: 'Sí',
+      impresion_facultad: impresion === 'si' ? 'Sí' : 'No',
+      tipo: 'Otro',
+      fecha: fecha
+    });
+  });
+
   const btn = document.getElementById('btn-confirmar');
-  btn.disabled = true; btn.textContent = 'Enviando...';
-  for (var i=0; i<filas.length; i++) {
-    try { await fetch(PA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(filas[i])}); } catch(e) {}
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  for (var i = 0; i < filas.length; i++) {
+    try {
+      await fetch(PA_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(filas[i])
+      });
+    } catch(e) {
+      console.error('Error al enviar a Power Automate', e);
+    }
   }
-  filas.forEach(function(f){ sessionLog.push(f); });
+
+  filas.forEach(function(f){ 
+    sessionLog.push(f); 
+  });
+
   updateSessionBar();
-  btn.textContent = 'Enviar →'; btn.disabled = false;
+
+  btn.textContent = 'Enviar →';
+  btn.disabled = false;
+
   document.getElementById('sum-meta-header').textContent = currentCurso + ' · Prof. ' + currentProf;
   document.getElementById('sum-meta').innerHTML = 'Curso: <span>' + currentCurso + '</span> &nbsp;·&nbsp; Profesor: <span>' + currentProf + '</span>';
-  document.getElementById('sum-impresion').innerHTML = impresion==='si' ? '<span class="summary-pill imp-si">🖨️ Sí requiere impresión</span>' : '<span class="summary-pill imp-no">✗ No requiere impresión</span>';
-  document.getElementById('sum-si').innerHTML = siList.length ? siList.map(function(a){ return '<span class="summary-pill si">✔ '+a.nombre+'</span>'; }).join('') : '<div class="empty">Ninguno</div>';
-  document.getElementById('sum-no').innerHTML = noList.length ? noList.map(function(a){ return '<span class="summary-pill no">✘ '+a.nombre+'</span>'; }).join('') : '<div class="empty">Ninguno</div>';
+
+  document.getElementById('sum-impresion').innerHTML =
+    impresion === 'si'
+      ? '<span class="summary-pill imp-si">🖨️ Sí requiere impresión</span>'
+      : '<span class="summary-pill imp-no">✗ No requiere impresión</span>';
+
+  document.getElementById('sum-si').innerHTML = siList.length
+    ? siList.map(function(a){ return '<span class="summary-pill si">✔ ' + a.nombre + '</span>'; }).join('')
+    : '<div class="empty">Ninguno</div>';
+
+  document.getElementById('sum-no').innerHTML = noList.length
+    ? noList.map(function(a){ return '<span class="summary-pill no">✘ ' + a.nombre + '</span>'; }).join('')
+    : '<div class="empty">Ninguno</div>';
+
   var sumOtros = document.getElementById('sum-otros');
   var sumOtrosTitle = document.getElementById('sum-otros-title');
-  if (otros.length) { sumOtrosTitle.style.display='flex'; sumOtros.innerHTML=otros.map(function(n){ return '<span class="summary-pill otro">👤 '+n+'</span>'; }).join(''); }
-  else { sumOtrosTitle.style.display='none'; sumOtros.innerHTML=''; }
-  document.getElementById('form-section').style.display='none';
+
+  if (otros.length) {
+    sumOtrosTitle.style.display = 'flex';
+    sumOtros.innerHTML = otros.map(function(n){
+      return '<span class="summary-pill otro">👤 ' + n + '</span>';
+    }).join('');
+  } else {
+    sumOtrosTitle.style.display = 'none';
+    sumOtros.innerHTML = '';
+  }
+
+  document.getElementById('form-section').style.display = 'none';
   document.getElementById('summary').classList.add('visible');
   setStep(4);
-  window.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo({top: 0, behavior: 'smooth'});
 }
  
 function reiniciar() {
