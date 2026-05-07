@@ -1,3 +1,6 @@
+Semana pruebas ayudantes · HTML
+Copiar
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -413,24 +416,23 @@ async function confirmar() {
   const correoProf = document.getElementById('correo-prof').value.trim();
   const token = existingToken || (Math.random().toString(36).substr(2,9) + Math.random().toString(36).substr(2,9));
   const fecha = new Date().toLocaleDateString('es-CL');
-  const filas = [];
-  currentAyudantes.forEach(function(a){
-    filas.push({curso:currentCurso, profesor:currentProf, correo_profesor:correoProf, token:token,
-      ayudante:a.nombre, correo:a.correo, coordinador:a.coordinador?'Sí':'No',
-      cuida_prueba:respuestas[a.nombre]==='si'?'Sí':'No',
-      impresion_facultad:impresion==='si'?'Sí':'No', tipo:'Ayudante', fecha:fecha});
-  });
-  otros.forEach(function(n){
-    filas.push({curso:currentCurso, profesor:currentProf, correo_profesor:correoProf, token:token,
-      ayudante:n, correo:'', coordinador:'No', cuida_prueba:'Sí',
-      impresion_facultad:impresion==='si'?'Sí':'No', tipo:'Otro', fecha:fecha});
-  });
+ 
+  const fila = {
+    curso: currentCurso,
+    profesor: currentProf,
+    correo_profesor: correoProf,
+    token: token,
+    impresion_facultad: impresion === 'si' ? 'Sí' : 'No',
+    cuidan_prueba: siList.map(function(a){ return a.nombre; }).join(', '),
+    no_cuidan: noList.map(function(a){ return a.nombre; }).join(', '),
+    otros: otros.join(', '),
+    fecha: fecha
+  };
+ 
   const btn = document.getElementById('btn-confirmar');
   btn.disabled = true; btn.textContent = 'Enviando...';
-  for (var i=0; i<filas.length; i++) {
-    try { await fetch(PA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(filas[i])}); } catch(e) {}
-  }
-  filas.forEach(function(f){ sessionLog.push(f); });
+  try { await fetch(PA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(fila)}); } catch(e) {}
+  sessionLog.push(fila);
   updateSessionBar();
   btn.textContent = 'Enviar →'; btn.disabled = false;
   document.getElementById('sum-meta-header').textContent = currentCurso + ' · Prof. ' + currentProf;
