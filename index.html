@@ -1,6 +1,3 @@
-Semana pruebas ayudantes · HTML
-Copiar
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -59,6 +56,9 @@ select:disabled{opacity:.45;cursor:not-allowed}
 .toggle-btn.si:hover,.toggle-btn.si.active{background:var(--yes);color:#fff}
 .toggle-btn.no{border-color:var(--no);color:var(--no);background:transparent}
 .toggle-btn.no:hover,.toggle-btn.no.active{background:var(--no);color:#fff}
+.toggle-btn.pendiente{border-color:#e67e00;color:#e67e00;background:transparent}
+.toggle-btn.pendiente:hover,.toggle-btn.pendiente.active{background:#e67e00;color:#fff}
+.ayudante-row.answered-pendiente{border-color:#e67e00;background:#fff8f0}
 .otro-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem}
 .otro-input{flex:1;padding:.7rem 1rem;font-family:inherit;font-size:.9rem;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text)}
 .otro-input:focus{outline:none;border-color:var(--primary)}
@@ -89,6 +89,7 @@ select:disabled{opacity:.45;cursor:not-allowed}
 .summary-pill{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .85rem;border-radius:8px;font-size:.83rem;font-weight:500;margin:.25rem .2rem}
 .summary-pill.si{background:var(--yes-bg);color:var(--yes);border:1px solid #b7e4c7}
 .summary-pill.no{background:var(--no-bg);color:var(--no);border:1px solid #ffb3b3}
+.summary-pill.pendiente{background:#fff3e0;color:#e67e00;border:1px solid #ffcc80}
 .summary-pill.otro{background:#e0f4ff;color:#1565c0;border:1px solid #90caf9}
 .summary-pill.imp-si{background:#e0f4ff;color:#1565c0;border:1px solid #90caf9}
 .summary-pill.imp-no{background:#f3e5f5;color:#6a1b9a;border:1px solid #ce93d8}
@@ -255,7 +256,9 @@ select:disabled{opacity:.45;cursor:not-allowed}
       <div class="summary-group-title cuida" id="sum-otros-title" style="display:none">👤 Otras personas</div>
       <div id="sum-otros"></div><br>
       <div class="summary-group-title no-cuida">✘ No cuidarán la prueba</div>
-      <div id="sum-no"><div class="empty">Ninguno marcado</div></div>
+      <div id="sum-no"><div class="empty">Ninguno marcado</div></div><br>
+      <div class="summary-group-title" style="color:#e67e00">⏳ Pendiente</div>
+      <div id="sum-pendiente"><div class="empty">Ninguno marcado</div></div>
     </div>
     <div class="actions-row">
       <button class="btn btn-ghost" onclick="reiniciar()">← Volver a editar</button>
@@ -348,9 +351,11 @@ function renderAyudantes() {
     row.innerHTML = '<div class="ayudante-info"><div class="ayudante-nombre">' + nombre + (a.coordinador ? '<span class="coord-badge">Coord.</span>' : '') + '</div><div class="ayudante-email">' + a.correo + '</div></div>' +
       '<div class="toggle-group">' +
       '<button class="toggle-btn si" id="btn-si-' + id + '">✔ Sí</button>' +
-      '<button class="toggle-btn no" id="btn-no-' + id + '">✘ No</button></div>';
+      '<button class="toggle-btn no" id="btn-no-' + id + '">✘ No</button>' +
+      '<button class="toggle-btn pendiente" id="btn-pendiente-' + id + '">⏳</button></div>';
     row.querySelector('.toggle-btn.si').addEventListener('click', function() { marcar(a.nombre, 'si'); });
     row.querySelector('.toggle-btn.no').addEventListener('click', function() { marcar(a.nombre, 'no'); });
+    row.querySelector('.toggle-btn.pendiente').addEventListener('click', function() { marcar(a.nombre, 'pendiente'); });
     list.appendChild(row);
   });
   updateProgress();
@@ -364,6 +369,7 @@ function marcar(nombre, val) {
   document.getElementById('row-' + id).className = 'ayudante-row answered-' + val;
   document.getElementById('btn-si-' + id).classList.toggle('active', val === 'si');
   document.getElementById('btn-no-' + id).classList.toggle('active', val === 'no');
+  document.getElementById('btn-pendiente-' + id).classList.toggle('active', val === 'pendiente');
   updateProgress();
 }
  
@@ -425,6 +431,7 @@ async function confirmar() {
     impresion_facultad: impresion === 'si' ? 'Sí' : 'No',
     cuidan_prueba: siList.map(function(a){ return a.nombre; }).join(', '),
     no_cuidan: noList.map(function(a){ return a.nombre; }).join(', '),
+    pendiente: currentAyudantes.filter(function(a){ return respuestas[a.nombre]==='pendiente'; }).map(function(a){ return a.nombre; }).join(', '),
     otros: otros.join(', '),
     fecha: fecha
   };
@@ -440,6 +447,8 @@ async function confirmar() {
   document.getElementById('sum-impresion').innerHTML = impresion==='si' ? '<span class="summary-pill imp-si">🖨️ Sí requiere impresión</span>' : '<span class="summary-pill imp-no">✗ No requiere impresión</span>';
   document.getElementById('sum-si').innerHTML = siList.length ? siList.map(function(a){ return '<span class="summary-pill si">✔ '+a.nombre+'</span>'; }).join('') : '<div class="empty">Ninguno</div>';
   document.getElementById('sum-no').innerHTML = noList.length ? noList.map(function(a){ return '<span class="summary-pill no">✘ '+a.nombre+'</span>'; }).join('') : '<div class="empty">Ninguno</div>';
+  var pendienteList = currentAyudantes.filter(function(a){ return respuestas[a.nombre]==='pendiente'; });
+  document.getElementById('sum-pendiente').innerHTML = pendienteList.length ? pendienteList.map(function(a){ return '<span class="summary-pill pendiente">⏳ '+a.nombre+'</span>'; }).join('') : '<div class="empty">Ninguno</div>';
   var sumOtros = document.getElementById('sum-otros');
   var sumOtrosTitle = document.getElementById('sum-otros-title');
   if (otros.length) { sumOtrosTitle.style.display='flex'; sumOtros.innerHTML=otros.map(function(n){ return '<span class="summary-pill otro">👤 '+n+'</span>'; }).join(''); }
