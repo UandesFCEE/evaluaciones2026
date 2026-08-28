@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Semana de Pruebas 202610</title>
+<title>Semana de Pruebas 202620</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -126,12 +126,8 @@ select:disabled{opacity:.45;cursor:not-allowed}
           <option value="">— Seleccione un curso —</option>
         </select>
       </div>
-      <div id="email-wrap" style="display:none; margin-top:1rem;">
-        <label style="font-size:.82rem;color:var(--muted);font-weight:500;display:block;margin-bottom:.4rem;">Correo electrónico</label>
-        <input type="email" id="correo-prof" placeholder="nombre@universidad.cl"
-          style="width:100%;padding:.85rem 1rem;font-family:inherit;font-size:.92rem;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);"
-          oninput="validarEmail()" />
-        <div id="email-error" style="font-size:.75rem;color:var(--no);margin-top:.3rem;display:none;">Ingrese un correo válido</div>
+      <div id="curso-unico" style="display:none; margin-top:.6rem; padding:.7rem 1rem; background:var(--accent2); border-radius:10px; font-size:.9rem;">
+        Curso: <strong id="curso-unico-nombre"></strong>
       </div>
       <button class="btn btn-primary" id="btn-paso1" disabled onclick="irAPaso2()" style="margin-top:1.2rem;">Continuar →</button>
     </div>
@@ -212,6 +208,7 @@ select:disabled{opacity:.45;cursor:not-allowed}
       <button class="btn btn-ghost" onclick="reiniciar()">← Volver a editar</button>
       <button class="btn btn-export" onclick="exportarTexto()">📋 Copiar resumen</button>
     </div>
+    <button class="btn btn-primary" style="margin-top:.7rem" onclick="registrarOtroCurso()">➕ Registrar otro curso</button>
     <button class="btn btn-excel" onclick="descargarExcel()">📥 Descargar Excel</button>
   </div>
 </main>
@@ -295,9 +292,9 @@ function resetDesdeCero() {
   cursoWrap.style.display = 'none';
   selCurso.innerHTML = '<option value="">— Seleccione un curso —</option>';
   selCurso.disabled = true;
+  document.getElementById('curso-unico').style.display = 'none';
   document.getElementById('impresion-card').style.display = 'none';
   document.getElementById('ayudantes-card').style.display = 'none';
-  document.getElementById('email-wrap').style.display = 'none';
   document.getElementById('btn-paso1').disabled = true;
   respuestas = {};
   currentCurso = ''; currentProf = ''; currentAyudantes = [];
@@ -314,11 +311,14 @@ function onProfesorChange() {
   const selCurso = document.getElementById('sel-curso');
 
   if (opciones.length === 1) {
-    // Dicta un solo curso: se autoselecciona
+    // Dicta un solo curso: se autoselecciona y se muestra su nombre
     currentCurso = opciones[0].curso;
     currentAyudantes = opciones[0].ayudantes;
     cursoWrap.style.display = 'none';
-    mostrarPasoEmail();
+    const cursoUnico = document.getElementById('curso-unico');
+    document.getElementById('curso-unico-nombre').textContent = currentCurso;
+    cursoUnico.style.display = 'block';
+    prepararSiguientePaso();
   } else {
     // Dicta varios cursos: que elija cuál
     cursoWrap.style.display = 'block';
@@ -335,17 +335,16 @@ function onCursoChange() {
   const curso = document.getElementById('sel-curso').value;
   document.getElementById('impresion-card').style.display = 'none';
   document.getElementById('ayudantes-card').style.display = 'none';
-  document.getElementById('email-wrap').style.display = 'none';
   document.getElementById('btn-paso1').disabled = true;
   respuestas = {};
   setStep(1);
   if (!curso || !currentProf) return;
   currentCurso = curso;
   currentAyudantes = PROF_CURSOS[currentProf].find(function(op) { return op.curso === curso; }).ayudantes;
-  mostrarPasoEmail();
+  prepararSiguientePaso();
 }
 
-function mostrarPasoEmail() {
+function prepararSiguientePaso() {
   respuestas = {}; impresion = null; otrosCount = 0; profesorPresente = null;
   document.getElementById('otros-list').innerHTML = '';
   document.getElementById('imp-si').classList.remove('active');
@@ -355,17 +354,8 @@ function mostrarPasoEmail() {
   document.getElementById('btn-siguiente').disabled = true;
   document.getElementById('ayudantes-card').style.display = 'none';
   document.getElementById('impresion-card').style.display = 'none';
-  document.getElementById('correo-prof').value = '';
-  document.getElementById('email-wrap').style.display = 'block';
-  document.getElementById('btn-paso1').disabled = true;
+  document.getElementById('btn-paso1').disabled = false;
   renderAyudantes();
-}
- 
-function validarEmail() {
-  const val = document.getElementById('correo-prof').value.trim();
-  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
-  document.getElementById('email-error').style.display = valid || !val ? 'none' : 'block';
-  document.getElementById('btn-paso1').disabled = !valid;
 }
  
 function irAPaso2() {
@@ -473,7 +463,6 @@ async function confirmar() {
   const siList = currentAyudantes.filter(function(a){ return respuestas[a.nombre]==='si'; });
   const noList = currentAyudantes.filter(function(a){ return respuestas[a.nombre]==='no'; });
   const otros = getOtros();
-  const correoProf = document.getElementById('correo-prof').value.trim();
   const token = existingToken || (Math.random().toString(36).substr(2,9) + Math.random().toString(36).substr(2,9));
   const fecha = new Date().toLocaleDateString('es-CL');
   const observacionesTexto = document.getElementById('observaciones').value.trim();
@@ -486,7 +475,6 @@ async function confirmar() {
   const fila = {
     curso: currentCurso,
     profesor: currentProf,
-    correo_profesor: correoProf,
     token: token,
     impresion_facultad: impresion === 'si' ? 'Sí' : 'No',
     profesor_presente: profesorPresente === 'si' ? 'Sí' : profesorPresente === 'no' ? 'No' : 'No indicado',
@@ -530,6 +518,14 @@ function reiniciar() {
   document.getElementById('form-section').style.display='block';
   setStep(3);
   document.getElementById('ayudantes-card').scrollIntoView({behavior:'smooth'});
+}
+
+function registrarOtroCurso() {
+  document.getElementById('summary').classList.remove('visible');
+  document.getElementById('form-section').style.display='block';
+  document.getElementById('sel-prof').value = '';
+  resetDesdeCero();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
  
 function updateSessionBar() {
