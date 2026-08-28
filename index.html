@@ -99,7 +99,7 @@ select:disabled{opacity:.45;cursor:not-allowed}
 </head>
 <body>
 <header>
-  <div class="badge">202610</div>
+  <div class="badge">202620</div>
   <h1>Semana de Pruebas</h1>
 </header>
 <div class="steps-bar">
@@ -543,8 +543,8 @@ function descargarExcel() {
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet([headers].concat(rows));
   ws['!cols'] = [{wch:32},{wch:22},{wch:32},{wch:28},{wch:12},{wch:14},{wch:20},{wch:12},{wch:12}];
-  XLSX.utils.book_append_sheet(wb, ws, 'Pruebas 202610');
-  XLSX.writeFile(wb, 'vigilancia_pruebas_202610_'+new Date().toISOString().slice(0,10)+'.xlsx');
+  XLSX.utils.book_append_sheet(wb, ws, 'Pruebas 202620');
+  XLSX.writeFile(wb, 'vigilancia_pruebas_202620_'+new Date().toISOString().slice(0,10)+'.xlsx');
 }
  
 function exportarTexto() {
