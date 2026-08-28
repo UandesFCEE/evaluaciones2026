@@ -553,7 +553,7 @@ function exportarTexto() {
   const otros = getOtros();
   const cuidan = siList.concat(otros.map(function(n){ return n+' (otro)'; })).map(function(n){ return '  - '+n; }).join('\n');
   const nocuidan = noList.map(function(n){ return '  - '+n; }).join('\n');
-  const texto = 'SEMANA DE PRUEBAS 202610\nCurso: '+currentCurso+'\nProfesor: '+currentProf+'\nImpresion: '+(impresion==='si'?'SI':'NO')+'\n\nCUIDA LA PRUEBA:\n'+cuidan+'\n\nNO CUIDA:\n'+nocuidan;
+  const texto = 'SEMANA DE PRUEBAS 202620\nCurso: '+currentCurso+'\nProfesor: '+currentProf+'\nImpresion: '+(impresion==='si'?'SI':'NO')+'\n\nCUIDA LA PRUEBA:\n'+cuidan+'\n\nNO CUIDA:\n'+nocuidan;
   navigator.clipboard.writeText(texto).then(function(){
     var btn=document.querySelector('.btn-export'); btn.textContent='✓ ¡Copiado!';
     setTimeout(function(){ btn.innerHTML='📋 Copiar resumen'; },2000);
