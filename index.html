@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Semana de Pruebas 202620</title>
+<title>Semana de Pruebas 202610</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -534,8 +534,10 @@ function reiniciar() {
  
 function updateSessionBar() {
   const cursos = new Set(sessionLog.map(function(r){ return r.curso+'|'+r.profesor; })).size;
-  document.getElementById('session-count').textContent = cursos;
-  document.getElementById('session-hint').textContent = cursos > 0 ? '('+sessionLog.length+' ayudantes en '+cursos+' curso'+(cursos>1?'s':'')+')' : 'completa al menos uno para descargar Excel';
+  const elCount = document.getElementById('session-count');
+  const elHint = document.getElementById('session-hint');
+  if (elCount) elCount.textContent = cursos;
+  if (elHint) elHint.textContent = cursos > 0 ? '('+sessionLog.length+' ayudantes en '+cursos+' curso'+(cursos>1?'s':'')+')' : 'completa al menos uno para descargar Excel';
 }
  
 function descargarExcel() {
