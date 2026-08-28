@@ -276,7 +276,8 @@ async function cargarRoster() {
   try {
     const res = await fetch(SHAREPOINT_LIST_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) });
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    const items = await res.json();
+    const data = await res.json();
+    const items = Array.isArray(data) ? data : (data.body || []);
     construirDataDesdeItems(items);
     construirIndices();
     poblarSelectProfesor();
