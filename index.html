@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Semana de Pruebas 202610</title>
+<title>Semana de Pruebas 202620</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -216,7 +216,7 @@ select:disabled{opacity:.45;cursor:not-allowed}
   </div>
 </main>
 <script>
-const PA_URL = "https://defaultb91e1a9b47184623882e6fb655d96b.f0.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6001f308890547c3ba91016527120c1f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=n7hx1IwcuP3qf002pw2Tzhvmvry1HUKKEYjni22fo3M";
+const GUARDAR_RESPUESTA_URL = "https://defaultb91e1a9b47184623882e6fb655d96b.f0.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/13/workflows/7788198a876343cca7c84bc807b61a85/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=SbMu1jw9hms98dojycZVyAhCaF2byIjY1dEgpZfzrHc";
 // URL del flujo de Power Automate que expone la lista de SharePoint como JSON
 const SHAREPOINT_LIST_URL = "https://defaultb91e1a9b47184623882e6fb655d96b.f0.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/15/workflows/6ed9f97de34a44c89ab8163d36ea9e1f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-s9F5pSBM1P5EQGyuwIvYaS2hZ3BaKJvPv4Lxkvx1as";
 let CURSOS = [];
@@ -476,7 +476,13 @@ async function confirmar() {
   const correoProf = document.getElementById('correo-prof').value.trim();
   const token = existingToken || (Math.random().toString(36).substr(2,9) + Math.random().toString(36).substr(2,9));
   const fecha = new Date().toLocaleDateString('es-CL');
- 
+  const observacionesTexto = document.getElementById('observaciones').value.trim();
+
+  // Texto combinado para la columna única "QUIEN CUIDA" de SharePoint
+  const partesQuienCuida = siList.map(function(a){ return a.nombre; })
+    .concat(otros.map(function(n){ return n + ' (otro)'; }));
+  const quienCuidaTexto = partesQuienCuida.length ? partesQuienCuida.join(', ') : 'Nadie confirmado';
+
   const fila = {
     curso: currentCurso,
     profesor: currentProf,
@@ -484,17 +490,18 @@ async function confirmar() {
     token: token,
     impresion_facultad: impresion === 'si' ? 'Sí' : 'No',
     profesor_presente: profesorPresente === 'si' ? 'Sí' : profesorPresente === 'no' ? 'No' : 'No indicado',
+    quien_cuida: quienCuidaTexto,
     cuidan_prueba: siList.map(function(a){ return a.nombre; }).join(', '),
     no_cuidan: noList.map(function(a){ return a.nombre; }).join(', '),
     por_confirmar: currentAyudantes.filter(function(a){ return respuestas[a.nombre]==='pendiente'; }).map(function(a){ return a.nombre; }).join(', '),
     otros: otros.join(', '),
-    observaciones: document.getElementById('observaciones').value.trim(),
+    observaciones: observacionesTexto,
     fecha: fecha
   };
- 
+
   const btn = document.getElementById('btn-confirmar');
   btn.disabled = true; btn.textContent = 'Enviando...';
-  try { await fetch(PA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(fila)}); } catch(e) {}
+  try { await fetch(GUARDAR_RESPUESTA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(fila)}); } catch(e) { console.error('Error guardando en SharePoint:', e); }
   sessionLog.push(fila);
   updateSessionBar();
   btn.textContent = 'Enviar →'; btn.disabled = false;
