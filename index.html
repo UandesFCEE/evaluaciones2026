@@ -174,8 +174,9 @@ select:disabled{opacity:.45;cursor:not-allowed}
       <!-- Observaciones -->
       <div style="margin-top:1.2rem">
         <div class="ayudantes-title" style="margin-bottom:.6rem">Observaciones</div>
-        <textarea id="observaciones" placeholder="Escriba aquí cualquier observación relevante..."
+        <textarea id="observaciones" placeholder="Escriba aquí cualquier observación relevante..." maxlength="250" oninput="actualizarContadorObservaciones()"
           style="width:100%;padding:.85rem 1rem;font-family:inherit;font-size:.9rem;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);resize:vertical;min-height:90px;"></textarea>
+        <div id="obs-contador" style="text-align:right;font-size:.75rem;color:var(--muted);margin-top:.3rem;">0/250</div>
       </div>
  
       <button class="btn btn-primary" id="btn-confirmar" disabled onclick="confirmar()">Enviar →</button>
@@ -355,9 +356,16 @@ function prepararSiguientePaso() {
   document.getElementById('ayudantes-card').style.display = 'none';
   document.getElementById('impresion-card').style.display = 'none';
   document.getElementById('btn-paso1').disabled = false;
+  document.getElementById('observaciones').value = '';
+  document.getElementById('obs-contador').textContent = '0/250';
   renderAyudantes();
 }
  
+function actualizarContadorObservaciones() {
+  const el = document.getElementById('observaciones');
+  document.getElementById('obs-contador').textContent = el.value.length + '/250';
+}
+
 function irAPaso2() {
   document.getElementById('impresion-card').style.display = 'block';
   setStep(2);
